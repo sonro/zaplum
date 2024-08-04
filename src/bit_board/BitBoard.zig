@@ -14,6 +14,7 @@ const MaskInt = bit_board.MaskInt;
 const ShiftInt = bit_board.ShiftInt;
 const Range = bit_board.Range;
 const size = bit_board.size;
+const IndexInt = bit_board.IndexInt;
 
 /// The underlying bit mask
 mask: MaskInt,
@@ -47,24 +48,24 @@ pub fn initFull() BitBoard {
 }
 
 /// Returns true if the square at this index is set.
-pub fn isSet(self: BitBoard, index: u8) bool {
+pub fn isSet(self: BitBoard, index: IndexInt) bool {
     assert(index < size);
     return (self.mask & impl.maskBit(index)) != 0;
 }
 
 /// Returns the total number of set squares on this board
-pub fn count(self: BitBoard) u8 {
+pub fn count(self: BitBoard) IndexInt {
     return @popCount(self.mask);
 }
 
 /// Changes the value of the specified square to match the passed boolean.
-pub fn setValue(self: *BitBoard, index: u8, value: bool) void {
+pub fn setValue(self: *BitBoard, index: IndexInt, value: bool) void {
     assert(index < size);
     impl.setValue(&self.mask, index, value);
 }
 
 /// Sets the specified square
-pub fn set(self: *BitBoard, index: u8) void {
+pub fn set(self: *BitBoard, index: IndexInt) void {
     assert(index < size);
     impl.set(&self.mask, index);
 }
@@ -79,13 +80,13 @@ pub fn setRangeValue(self: *BitBoard, range: Range, value: bool) void {
 }
 
 /// Unsets a specific square on this board
-pub fn unset(self: *BitBoard, index: u8) void {
+pub fn unset(self: *BitBoard, index: IndexInt) void {
     assert(index < size);
     impl.unset(&self.mask, index);
 }
 
 /// Flips a specific square on this board
-pub fn toggle(self: *BitBoard, index: u8) void {
+pub fn toggle(self: *BitBoard, index: IndexInt) void {
     assert(index < size);
     impl.toggle(&self.mask, index);
 }
@@ -116,7 +117,7 @@ pub fn setIntersection(self: *BitBoard, other: BitBoard) void {
 
 /// Finds the index of the first set square.
 /// If no squares are set, returns null.
-pub fn findFirstSet(self: BitBoard) ?u8 {
+pub fn findFirstSet(self: BitBoard) ?IndexInt {
     const mask = self.mask;
     if (mask == 0) return null;
     return @ctz(mask);
@@ -124,7 +125,7 @@ pub fn findFirstSet(self: BitBoard) ?u8 {
 
 /// Finds the index of the first set square, and unsets it.
 /// If no squares are set, returns null.
-pub fn popBit(self: *BitBoard) ?u8 {
+pub fn popBit(self: *BitBoard) ?IndexInt {
     const mask = self.mask;
     if (mask == 0) return null;
     const index = @ctz(mask);
@@ -196,8 +197,8 @@ pub fn differenceWith(self: BitBoard, other: BitBoard) BitBoard {
 
 pub fn format(self: BitBoard, _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
     // rank and file from a8 to h1
-    var rank: u8 = 8;
-    var file: u8 = undefined;
+    var rank: IndexInt = 8;
+    var file: IndexInt = undefined;
     while (rank > 0) {
         rank -= 1;
         file = 0;
@@ -235,7 +236,7 @@ fn SingleWordIterator(comptime direction: IteratorOptions.Direction) type {
         // all bits which have not yet been iterated over
         bits_remain: MaskInt,
 
-        pub fn next(self: *IterSelf) ?u8 {
+        pub fn next(self: *IterSelf) ?IndexInt {
             if (self.bits_remain == 0) return null;
 
             switch (direction) {

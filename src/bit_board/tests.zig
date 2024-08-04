@@ -5,6 +5,7 @@ const MaskInt = bit_board.MaskInt;
 const ShiftInt = bit_board.ShiftInt;
 const Range = bit_board.Range;
 const size = bit_board.size;
+const IndexInt = bit_board.IndexInt;
 
 const full_mask: MaskInt = ~@as(MaskInt, 0);
 const empty_mask: MaskInt = 0;
@@ -205,12 +206,12 @@ pub fn testImpl(comptime impl: type) type {
             try test_set_full_mask(index, full_mask);
         }
 
-        fn test_set_value_empty_mask(index: u8, value: bool, expected: MaskInt) !void {
+        fn test_set_value_empty_mask(index: IndexInt, value: bool, expected: MaskInt) !void {
             var mask = empty_mask;
             try test_set_value(&mask, index, value, expected);
         }
 
-        fn test_set_value_full_mask(index: u8, value: bool, expected: MaskInt) !void {
+        fn test_set_value_full_mask(index: IndexInt, value: bool, expected: MaskInt) !void {
             var mask = full_mask;
             try test_set_value(&mask, index, value, expected);
         }
@@ -225,12 +226,12 @@ pub fn testImpl(comptime impl: type) type {
             try test_set_range_value(&mask, range, value, expected);
         }
 
-        fn test_set_empty_mask(index: u8, expected: MaskInt) !void {
+        fn test_set_empty_mask(index: IndexInt, expected: MaskInt) !void {
             var mask = empty_mask;
             try test_set(&mask, index, expected);
         }
 
-        fn test_set_full_mask(index: u8, expected: MaskInt) !void {
+        fn test_set_full_mask(index: IndexInt, expected: MaskInt) !void {
             var mask = full_mask;
             try test_set(&mask, index, expected);
         }
@@ -240,12 +241,12 @@ pub fn testImpl(comptime impl: type) type {
             try testing.expectEqual(expected, mask.*);
         }
 
-        fn test_set_value(mask: *MaskInt, index: u8, value: bool, expected: MaskInt) !void {
+        fn test_set_value(mask: *MaskInt, index: IndexInt, value: bool, expected: MaskInt) !void {
             impl.setValue(mask, index, value);
             try testing.expectEqual(expected, mask.*);
         }
 
-        fn test_set(mask: *MaskInt, index: u8, expected: MaskInt) !void {
+        fn test_set(mask: *MaskInt, index: IndexInt, expected: MaskInt) !void {
             impl.set(mask, index);
             try testing.expectEqual(expected, mask.*);
         }
