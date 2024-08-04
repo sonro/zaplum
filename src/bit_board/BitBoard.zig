@@ -1,31 +1,38 @@
 // Adapted from ``std.bit_set.IntegerBitSet``
 
-//! A bit representation of a chess board.
+//! A bit representation of a chess board
+const BitBoard = @This();
 
 const std = @import("std");
 const testing = std.testing;
 const assert = std.debug.assert;
 const IteratorOptions = std.bit_set.IteratorOptions;
 
-const BitBoard = @This();
+const zaplum = @import("../zaplum.zig");
+const bit_board = @import("../bit_board.zig");
+const MaskInt = bit_board.MaskInt;
+const ShiftInt = bit_board.ShiftInt;
+const Range = bit_board.Range;
+const size = bit_board.size;
 
-/// The integer type used to represent a board
-pub const MaskInt = u64;
+/// The underlying bit mask
+mask: MaskInt,
 
-/// The integer type used to shift a mask
-pub const ShiftInt = std.math.Log2Int(MaskInt);
+/// Default kind of ``BitBoard`` implementation
+pub const default_impl = Impl.math;
 
-pub const bit_length: u8 = 64;
-
-/// A range of squares within a board.
-pub const Range = struct {
-    /// The index of the first square of interest.
-    start: u8,
-    /// The index immediately after the last square of interest.
-    end: u8,
+/// The kind of ``BitBoard`` implementation
+pub const Impl = enum {
+    /// Bitwise maths
+    math,
+    /// Lookup table
+    lookup,
 };
 
-mask: MaskInt,
+const impl = switch (zaplum.options.bit_board_impl) {
+    .math => @import("MathImpl.zig"),
+    .lookup => @import("LookupImpl.zig"),
+};
 
 /// Creates a board with no squares set.
 pub fn initEmpty() BitBoard {
@@ -34,57 +41,53 @@ pub fn initEmpty() BitBoard {
 
 /// Creates a board with all squares set.
 pub fn initFull() BitBoard {
-    return .{ .mask = ~@as(MaskInt, 0) };
+    // maximum u64 value
+    return .{ .mask = std.math.maxInt(MaskInt) };
+    // return .{ .mask = @as(MaskInt, ) };
 }
 
 /// Returns true if the square at this index is set.
 pub fn isSet(self: BitBoard, index: u8) bool {
-    assert(index < bit_length);
-    return (self.mask & maskBit(index)) != 0;
+    assert(index < size);
+    return (self.mask & impl.maskBit(index)) != 0;
 }
 
 /// Returns the total number of set squares on this board
-pub fn count(self: BitBoard) usize {
+pub fn count(self: BitBoard) u8 {
     return @popCount(self.mask);
 }
 
 /// Changes the value of the specified square to match the passed boolean.
 pub fn setValue(self: *BitBoard, index: u8, value: bool) void {
-    assert(index < bit_length);
-    const bit = maskBit(index);
-    const new_bit = bit & std.math.boolMask(MaskInt, value);
-    self.mask = (self.mask & ~bit) | new_bit;
+    assert(index < size);
+    impl.setValue(&self.mask, index, value);
 }
 
 /// Sets the specified square
 pub fn set(self: *BitBoard, index: u8) void {
-    assert(index < bit_length);
-    self.mask |= maskBit(index);
+    assert(index < size);
+    impl.set(&self.mask, index);
 }
 
 /// Changes the value of all squares in the specified range to
 /// match the passed boolean.
 pub fn setRangeValue(self: *BitBoard, range: Range, value: bool) void {
-    assert(range.end <= bit_length);
+    assert(range.end <= size);
     assert(range.start <= range.end);
     if (range.start == range.end) return;
-
-    var range_mask = createRangeMask(range, true);
-    self.mask &= ~range_mask;
-    range_mask = createRangeMask(range, value);
-    self.mask |= range_mask;
+    impl.setRangeValue(&self.mask, range, value);
 }
 
 /// Unsets a specific square on this board
 pub fn unset(self: *BitBoard, index: u8) void {
-    assert(index < bit_length);
-    self.mask &= ~maskBit(index);
+    assert(index < size);
+    impl.unset(&self.mask, index);
 }
 
 /// Flips a specific square on this board
 pub fn toggle(self: *BitBoard, index: u8) void {
-    assert(index < bit_length);
-    self.mask ^= maskBit(index);
+    assert(index < size);
+    impl.toggle(&self.mask, index);
 }
 
 /// Flips all squares on this board which are present in the toggles board
@@ -132,7 +135,7 @@ pub fn popBit(self: *BitBoard) ?u8 {
 /// Returns true if every corresponding square in both
 /// boards are the same.
 pub fn eql(self: BitBoard, other: BitBoard) bool {
-    return bit_length == 0 or self.mask == other.mask;
+    return size == 0 or self.mask == other.mask;
 }
 
 /// Returns true if the first board is the subset
@@ -232,7 +235,7 @@ fn SingleWordIterator(comptime direction: IteratorOptions.Direction) type {
         // all bits which have not yet been iterated over
         bits_remain: MaskInt,
 
-        pub fn next(self: *IterSelf) ?usize {
+        pub fn next(self: *IterSelf) ?u8 {
             if (self.bits_remain == 0) return null;
 
             switch (direction) {
@@ -250,22 +253,4 @@ fn SingleWordIterator(comptime direction: IteratorOptions.Direction) type {
             }
         }
     };
-}
-
-fn createRangeMask(range: Range, value: bool) MaskInt {
-    const start_bit = @as(ShiftInt, @intCast(range.start));
-    var mask = std.math.boolMask(MaskInt, value) << start_bit;
-    if (range.end != bit_length) {
-        const end_bit = @as(ShiftInt, @intCast(range.end));
-        mask &= std.math.boolMask(MaskInt, value) >> @as(ShiftInt, @truncate(@as(usize, @bitSizeOf(MaskInt)) - @as(usize, end_bit)));
-    }
-    return mask;
-}
-
-fn maskBit(index: usize) MaskInt {
-    return @as(MaskInt, 1) << @as(ShiftInt, @intCast(index));
-}
-
-fn boolMaskBit(index: usize, value: bool) MaskInt {
-    return @as(MaskInt, @intFromBool(value)) << @as(ShiftInt, @intCast(index));
 }

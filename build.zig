@@ -33,6 +33,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    unit_tests.root_module.addImport("zaplum", lib_module);
     b.installArtifact(unit_tests);
 
     const run_unit_tests = b.addRunArtifact(unit_tests);
@@ -46,6 +47,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    exe_check.root_module.addImport("zaplum", lib_module);
     const check = b.step("check", "Check if foo compiles");
     check.dependOn(&exe_check.step);
 }
