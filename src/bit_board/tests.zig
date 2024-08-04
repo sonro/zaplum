@@ -180,6 +180,31 @@ pub fn testImpl(comptime impl: type) type {
             try test_set_range_value_full_mask(range, false, expected);
         }
 
+        test "set start empty mask" {
+            try test_set_empty_mask(0, 1);
+        }
+
+        test "set start full mask" {
+            try test_set_full_mask(0, full_mask);
+        }
+
+        test "set custom mask" {
+            var custom_mask: MaskInt = 0b1011_0110;
+            const expected: MaskInt = 0b1011_1110;
+            try test_set(&custom_mask, 3, expected);
+        }
+
+        test "set end empty mask" {
+            const index = size - 1;
+            const expected = 1 << index;
+            try test_set_empty_mask(index, expected);
+        }
+
+        test "set end full mask" {
+            const index = size - 1;
+            try test_set_full_mask(index, full_mask);
+        }
+
         fn test_set_value_empty_mask(index: u8, value: bool, expected: MaskInt) !void {
             var mask = empty_mask;
             try test_set_value(&mask, index, value, expected);
@@ -200,6 +225,16 @@ pub fn testImpl(comptime impl: type) type {
             try test_set_range_value(&mask, range, value, expected);
         }
 
+        fn test_set_empty_mask(index: u8, expected: MaskInt) !void {
+            var mask = empty_mask;
+            try test_set(&mask, index, expected);
+        }
+
+        fn test_set_full_mask(index: u8, expected: MaskInt) !void {
+            var mask = full_mask;
+            try test_set(&mask, index, expected);
+        }
+
         fn test_set_range_value(mask: *MaskInt, range: Range, value: bool, expected: MaskInt) !void {
             impl.setRangeValue(mask, range, value);
             try testing.expectEqual(expected, mask.*);
@@ -207,6 +242,11 @@ pub fn testImpl(comptime impl: type) type {
 
         fn test_set_value(mask: *MaskInt, index: u8, value: bool, expected: MaskInt) !void {
             impl.setValue(mask, index, value);
+            try testing.expectEqual(expected, mask.*);
+        }
+
+        fn test_set(mask: *MaskInt, index: u8, expected: MaskInt) !void {
+            impl.set(mask, index);
             try testing.expectEqual(expected, mask.*);
         }
     };
