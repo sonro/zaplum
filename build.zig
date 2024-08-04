@@ -42,12 +42,12 @@ pub fn build(b: *std.Build) void {
     test_step.dependOn(&run_unit_tests.step);
 
     const exe_check = b.addExecutable(.{
-        .name = "foo",
+        .name = "zaplum_main_check",
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
     exe_check.root_module.addImport("zaplum", lib_module);
-    const check = b.step("check", "Check if foo compiles");
+    const check = b.step("check", "Check if main compiles");
     check.dependOn(&exe_check.step);
 }

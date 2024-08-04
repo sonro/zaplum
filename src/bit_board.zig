@@ -18,9 +18,3 @@ pub const Range = struct {
     /// The index immediately after the last square of interest
     end: u8,
 };
-
-comptime {
-    _ = @import("bit_board/BitBoard.zig");
-    _ = @import("bit_board/LookupImpl.zig");
-    _ = @import("bit_board/MathImpl.zig");
-}
