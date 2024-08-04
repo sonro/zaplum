@@ -8,8 +8,6 @@ const size = bit_board.size;
 
 const MathImpl = @This();
 
-const tests = @import("tests.zig");
-
 pub fn setValue(mask: *MaskInt, index: u8, value: bool) void {
     const bit = maskBit(index);
     const new_bit = bit & std.math.boolMask(MaskInt, value);
@@ -59,5 +57,6 @@ fn createRangeMask(range: Range, value: bool) MaskInt {
 }
 
 comptime {
+    const tests = @import("tests.zig");
     _ = tests.testImpl(@This());
 }
