@@ -6,6 +6,10 @@ const ShiftInt = bit_board.ShiftInt;
 const Range = bit_board.Range;
 const size = bit_board.size;
 
+const MathImpl = @This();
+
+const tests = @import("tests.zig");
+
 pub fn setValue(mask: *MaskInt, index: u8, value: bool) void {
     const bit = maskBit(index);
     const new_bit = bit & std.math.boolMask(MaskInt, value);
@@ -54,40 +58,6 @@ fn createRangeMask(range: Range, value: bool) MaskInt {
     return mask;
 }
 
-const full_mask: MaskInt = ~@as(MaskInt, 0);
-const empty_mask: MaskInt = 0;
-
-test "set value lowest true empty mask" {
-    try test_set_value_empty_mask(0, true, 1);
-}
-
-test "set value lowest true full mask" {
-    try test_set_value_full_mask(0, true, full_mask);
-}
-
-test "set value lowest false empty mask" {
-    try test_set_value_empty_mask(0, false, 0);
-}
-
-test "set value lowest false full mask" {
-    const expected = full_mask << 1;
-    try test_set_value_full_mask(0, false, expected);
-}
-
-test "set value highest true empty mask" {
-    const index = size - 1;
-    const expected = @as(MaskInt, 1) << index;
-    try test_set_value_empty_mask(index, true, expected);
-}
-
-fn test_set_value_empty_mask(index: u8, value: bool, expected: MaskInt) !void {
-    var mask = empty_mask;
-    setValue(&mask, index, value);
-    try testing.expectEqual(expected, mask);
-}
-
-fn test_set_value_full_mask(index: u8, value: bool, expected: MaskInt) !void {
-    var mask = full_mask;
-    setValue(&mask, index, value);
-    try testing.expectEqual(expected, mask);
+comptime {
+    _ = tests.testImpl(@This());
 }

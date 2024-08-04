@@ -5,6 +5,7 @@ const ShiftInt = bit_board.ShiftInt;
 const Range = bit_board.Range;
 const size = bit_board.size;
 
+const tests = @import("tests.zig");
 const MathImpl = @import("MathImpl.zig");
 
 const lut: [2][size]MaskInt = initLut();
@@ -57,4 +58,8 @@ fn initLut() [2][size]MaskInt {
         unset_lut[i] = ~set_lut[i];
     }
     return .{ unset_lut, set_lut };
+}
+
+comptime {
+    _ = tests.testImpl(@This());
 }
