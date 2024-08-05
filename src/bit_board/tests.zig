@@ -284,6 +284,46 @@ pub fn testImpl(comptime impl: type) type {
             try testUnsetRangeFullMask(range, expected);
         }
 
+        test "toggle lowest empty mask" {
+            try testToggleEmptyMask(0, 1);
+        }
+
+        test "toggle lowest full mask" {
+            try testToggleFullMask(0, full_mask << 1);
+        }
+
+        test "toggle custom mask" {
+            var custom_mask: MaskInt = 0b1011_0110;
+            const expected: MaskInt = 0b1011_1110;
+            try testToggle(&custom_mask, 3, expected);
+        }
+
+        test "toggle custom mask twice" {
+            const original: MaskInt = 0b1011_0110;
+            const toggled: MaskInt = 0b1011_0010;
+            var custom_mask: MaskInt = original;
+            try testToggle(&custom_mask, 2, toggled);
+            try testToggle(&custom_mask, 2, original);
+        }
+
+        test "toggle highest empty mask" {
+            try testToggleEmptyMask(size - 1, 1 << (size - 1));
+        }
+
+        test "toggle highest full mask" {
+            try testToggleFullMask(size - 1, full_mask >> 1);
+        }
+
+        fn testToggleEmptyMask(index: IndexInt, expected: MaskInt) !void {
+            var mask = empty_mask;
+            try testToggle(&mask, index, expected);
+        }
+
+        fn testToggleFullMask(index: IndexInt, expected: MaskInt) !void {
+            var mask = full_mask;
+            try testToggle(&mask, index, expected);
+        }
+
         fn testSetValueEmptyMask(index: IndexInt, value: bool, expected: MaskInt) !void {
             var mask = empty_mask;
             try testSetValue(&mask, index, value, expected);
@@ -371,6 +411,11 @@ pub fn testImpl(comptime impl: type) type {
 
         fn testUnsetRange(mask: *MaskInt, range: Range, expected: MaskInt) !void {
             impl.unsetRange(mask, range);
+            try testing.expectEqual(expected, mask.*);
+        }
+
+        fn testToggle(mask: *MaskInt, index: IndexInt, expected: MaskInt) !void {
+            impl.toggle(mask, index);
             try testing.expectEqual(expected, mask.*);
         }
     };
