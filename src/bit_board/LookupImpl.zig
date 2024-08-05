@@ -35,8 +35,9 @@ pub fn unset(mask: *MaskInt, index: IndexInt) void {
 }
 
 pub fn unsetRange(mask: *MaskInt, range: Range) void {
-    const range_mask = MathImpl.createRangeMask(range, false);
-    mask.* &= range_mask;
+    // const range_mask = MathImpl.createRangeMask(range, false);
+    // mask.* &= range_mask;
+    MathImpl.setRangeValue(mask, range, false);
 }
 
 pub fn toggle(mask: *MaskInt, index: IndexInt) void {

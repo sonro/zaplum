@@ -249,6 +249,41 @@ pub fn testImpl(comptime impl: type) type {
             try testUnset(&custom_mask, 2, expected);
         }
 
+        test "unset range start single range empty mask" {
+            const range = Range{ .start = 0, .end = 1 };
+            try testUnsetRangeEmptyMask(range, 0);
+        }
+
+        test "unset range start single range full mask" {
+            const range = Range{ .start = 0, .end = 1 };
+            const expected = full_mask << 1;
+            try testUnsetRangeFullMask(range, expected);
+        }
+
+        test "unset range custom mask" {
+            const range = Range{ .start = 4, .end = 8 };
+            var custom_mask: MaskInt = 0b1011_0110;
+            const expected: MaskInt = 0b0000_0110;
+            try testUnsetRange(&custom_mask, range, expected);
+        }
+
+        test "unset range end single range empty mask" {
+            const range = Range{ .start = size - 1, .end = size };
+            try testUnsetRangeEmptyMask(range, 0);
+        }
+
+        test "unset range end single range full mask" {
+            const range = Range{ .start = size - 1, .end = size };
+            const expected = full_mask >> 1;
+            try testUnsetRangeFullMask(range, expected);
+        }
+
+        test "unset full range full mask" {
+            const range = Range{ .start = 0, .end = size };
+            const expected = 0;
+            try testUnsetRangeFullMask(range, expected);
+        }
+
         fn testSetValueEmptyMask(index: IndexInt, value: bool, expected: MaskInt) !void {
             var mask = empty_mask;
             try testSetValue(&mask, index, value, expected);
@@ -299,6 +334,16 @@ pub fn testImpl(comptime impl: type) type {
             try testUnset(&mask, index, expected);
         }
 
+        fn testUnsetRangeEmptyMask(range: Range, expected: MaskInt) !void {
+            var mask = empty_mask;
+            try testUnsetRange(&mask, range, expected);
+        }
+
+        fn testUnsetRangeFullMask(range: Range, expected: MaskInt) !void {
+            var mask = full_mask;
+            try testUnsetRange(&mask, range, expected);
+        }
+
         fn testSetRangeValue(mask: *MaskInt, range: Range, value: bool, expected: MaskInt) !void {
             impl.setRangeValue(mask, range, value);
             try testing.expectEqual(expected, mask.*);
@@ -321,6 +366,11 @@ pub fn testImpl(comptime impl: type) type {
 
         fn testUnset(mask: *MaskInt, index: IndexInt, expected: MaskInt) !void {
             impl.unset(mask, index);
+            try testing.expectEqual(expected, mask.*);
+        }
+
+        fn testUnsetRange(mask: *MaskInt, range: Range, expected: MaskInt) !void {
+            impl.unsetRange(mask, range);
             try testing.expectEqual(expected, mask.*);
         }
     };
