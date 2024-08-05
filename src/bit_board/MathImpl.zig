@@ -47,7 +47,7 @@ pub fn maskBit(index: IndexInt) MaskInt {
     return @as(MaskInt, 1) << @as(ShiftInt, @intCast(index));
 }
 
-fn createRangeMask(range: Range, value: bool) MaskInt {
+pub fn createRangeMask(range: Range, value: bool) MaskInt {
     const start_bit = @as(ShiftInt, @intCast(range.start));
     var mask = std.math.boolMask(MaskInt, value) << start_bit;
     if (range.end != size) {

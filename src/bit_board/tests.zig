@@ -207,6 +207,33 @@ pub fn testImpl(comptime impl: type) type {
             try testSetFullMask(index, full_mask);
         }
 
+        test "set range start single range empty mask" {
+            const range = Range{ .start = 0, .end = 1 };
+            try testSetRangeEmptyMask(range, 1);
+        }
+
+        test "set range start single range full mask" {
+            const range = Range{ .start = 0, .end = 1 };
+            try testSetRangeFullMask(range, full_mask);
+        }
+
+        test "set range custom mask" {
+            const range = Range{ .start = 4, .end = 8 };
+            var custom_mask: MaskInt = 0b1011_0110;
+            const expected: MaskInt = 0b1111_0110;
+            try testSetRange(&custom_mask, range, expected);
+        }
+
+        test "set range end single range empty mask" {
+            const range = Range{ .start = size - 1, .end = size };
+            try testSetRangeEmptyMask(range, 1 << (size - 1));
+        }
+
+        test "set range end single range full mask" {
+            const range = Range{ .start = size - 1, .end = size };
+            try testSetRangeFullMask(range, full_mask);
+        }
+
         fn testSetValueEmptyMask(index: IndexInt, value: bool, expected: MaskInt) !void {
             var mask = empty_mask;
             try testSetValue(&mask, index, value, expected);
@@ -237,6 +264,16 @@ pub fn testImpl(comptime impl: type) type {
             try testSet(&mask, index, expected);
         }
 
+        fn testSetRangeEmptyMask(range: Range, expected: MaskInt) !void {
+            var mask = empty_mask;
+            try testSetRange(&mask, range, expected);
+        }
+
+        fn testSetRangeFullMask(range: Range, expected: MaskInt) !void {
+            var mask = full_mask;
+            try testSetRange(&mask, range, expected);
+        }
+
         fn testSetRangeValue(mask: *MaskInt, range: Range, value: bool, expected: MaskInt) !void {
             impl.setRangeValue(mask, range, value);
             try testing.expectEqual(expected, mask.*);
@@ -249,6 +286,11 @@ pub fn testImpl(comptime impl: type) type {
 
         fn testSet(mask: *MaskInt, index: IndexInt, expected: MaskInt) !void {
             impl.set(mask, index);
+            try testing.expectEqual(expected, mask.*);
+        }
+
+        fn testSetRange(mask: *MaskInt, range: Range, expected: MaskInt) !void {
+            impl.setRange(mask, range);
             try testing.expectEqual(expected, mask.*);
         }
     };
