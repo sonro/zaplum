@@ -10,11 +10,12 @@ const IteratorOptions = std.bit_set.IteratorOptions;
 
 const zaplum = @import("../zaplum.zig");
 const bit_board = @import("../bit_board.zig");
+const chess = @import("../chess.zig");
 const MaskInt = bit_board.MaskInt;
 const ShiftInt = bit_board.ShiftInt;
-const Range = bit_board.Range;
-const size = bit_board.size;
-const IndexInt = bit_board.IndexInt;
+const Range = chess.Range;
+const size = chess.board_size;
+const IndexInt = chess.IndexInt;
 
 /// The underlying bit mask
 mask: MaskInt,

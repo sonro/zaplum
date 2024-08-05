@@ -1,4 +1,5 @@
 pub const bit_board = @import("bit_board.zig");
+pub const chess = @import("chess.zig");
 pub const BitBoard = bit_board.BitBoard;
 
 const root = @import("root");
