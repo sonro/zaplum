@@ -1,6 +1,6 @@
 .{
     .name = "zaplum",
-    .version = "0.0.0",
+    .version = "0.1.0",
     .dependencies = .{},
     .paths = .{
         "build.zig",
@@ -8,5 +8,6 @@
         "src",
         "LICENSE",
         "README.md",
+        "CHANGELOG.md",
     },
 }
