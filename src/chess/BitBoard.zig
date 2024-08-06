@@ -48,6 +48,10 @@ const impl = switch (zaplum.options.bit_board_impl) {
     .lookup => LookupImpl,
 };
 
+pub fn from(mask: MaskInt) BitBoard {
+    return .{ .mask = mask };
+}
+
 /// Returns true if the square at this index is set.
 pub fn isSet(self: BitBoard, index: IndexInt) bool {
     assert(index < size);
