@@ -90,6 +90,22 @@ pub fn unset(self: *BitBoard, index: IndexInt) void {
     impl.unset(&self.mask, index);
 }
 
+/// Sets all squares in the specified range
+pub fn setRange(self: *BitBoard, range: Range) void {
+    assert(range.end <= size);
+    assert(range.start <= range.end);
+    if (range.start == range.end) return;
+    impl.setRange(&self.mask, range);
+}
+
+/// Unsets all squares in the specified range
+pub fn unsetRange(self: *BitBoard, range: Range) void {
+    assert(range.end <= size);
+    assert(range.start <= range.end);
+    if (range.start == range.end) return;
+    impl.unsetRange(&self.mask, range);
+}
+
 /// Flips a specific square on this board
 pub fn toggle(self: *BitBoard, index: IndexInt) void {
     assert(index < size);
@@ -357,6 +373,52 @@ test "set range value are set false" {
     for (0..3) |i| {
         try testing.expect(!board.isSet(@intCast(i)));
     }
+}
+
+test "set range empty to full" {
+    var board = empty;
+    board.setRange(.{ .start = 0, .end = size });
+    try testing.expectEqual(full, board);
+}
+
+test "set range full" {
+    var board = full;
+    board.setRange(.{ .start = 0, .end = size });
+    try testing.expectEqual(full, board);
+}
+
+test "set range custom" {
+    var board = from(0b1001);
+    board.setRange(.{ .start = 1, .end = 3 });
+    try testing.expectEqual(from(0b1111), board);
+}
+
+test "unset range empty" {
+    var board = empty;
+    board.unsetRange(.{ .start = 0, .end = 3 });
+    for (0..3) |i| {
+        try testing.expect(!board.isSet(@intCast(i)));
+    }
+}
+
+test "unset range full" {
+    var board = full;
+    board.unsetRange(.{ .start = 0, .end = 3 });
+    for (0..3) |i| {
+        try testing.expect(!board.isSet(@intCast(i)));
+    }
+}
+
+test "unset range full to empty" {
+    var board = full;
+    board.unsetRange(.{ .start = 0, .end = size });
+    try testing.expectEqual(empty, board);
+}
+
+test "unset range custom" {
+    var board = from(0b1111);
+    board.unsetRange(.{ .start = 1, .end = 3 });
+    try testing.expectEqual(from(0b1001), board);
 }
 
 test "toggle once" {
