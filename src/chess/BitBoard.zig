@@ -26,6 +26,12 @@ pub const MaskInt = u64;
 /// The integer type used to shift a mask
 pub const ShiftInt = std.math.Log2Int(MaskInt);
 
+/// BitBoard with no squares set.
+pub const empty = initEmpty();
+
+/// BitBoard with all squares set.
+pub const full = initFull();
+
 /// Default kind of ``BitBoard`` implementation
 pub const default_impl = Impl.math;
 
@@ -41,18 +47,6 @@ const impl = switch (zaplum.options.bit_board_impl) {
     .math => MathImpl,
     .lookup => LookupImpl,
 };
-
-/// Creates a board with no squares set.
-pub fn initEmpty() BitBoard {
-    return .{ .mask = 0 };
-}
-
-/// Creates a board with all squares set.
-pub fn initFull() BitBoard {
-    // maximum u64 value
-    return .{ .mask = std.math.maxInt(MaskInt) };
-    // return .{ .mask = @as(MaskInt, ) };
-}
 
 /// Returns true if the square at this index is set.
 pub fn isSet(self: BitBoard, index: IndexInt) bool {
@@ -261,4 +255,12 @@ fn SingleWordIterator(comptime direction: IteratorOptions.Direction) type {
             }
         }
     };
+}
+
+fn initEmpty() BitBoard {
+    return .{ .mask = 0 };
+}
+
+fn initFull() BitBoard {
+    return .{ .mask = std.math.maxInt(MaskInt) };
 }
