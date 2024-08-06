@@ -1,3 +1,4 @@
+pub const BitBoard = @import("chess/BitBoard.zig");
 /// The number of squares on a board
 pub const board_size: IndexInt = 64;
 

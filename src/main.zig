@@ -12,7 +12,7 @@ pub const zaplum_options = zaplum.Options{
 pub fn main() !void {
     // print bitboard
 
-    var board = zaplum.BitBoard.initEmpty();
+    var board = zaplum.chess.BitBoard.initEmpty();
     board.setRangeValue(.{ .start = 0, .end = 16 }, true);
     std.debug.print("{s}", .{board});
 }

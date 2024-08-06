@@ -9,16 +9,22 @@ const assert = std.debug.assert;
 const IteratorOptions = std.bit_set.IteratorOptions;
 
 const zaplum = @import("../zaplum.zig");
-const bit_board = @import("../bit_board.zig");
 const chess = @import("../chess.zig");
-const MaskInt = bit_board.MaskInt;
-const ShiftInt = bit_board.ShiftInt;
 const Range = chess.Range;
 const size = chess.board_size;
 const IndexInt = chess.IndexInt;
 
+const MathImpl = @import("bit_board/MathImpl.zig");
+const LookupImpl = @import("bit_board/LookupImpl.zig");
+
 /// The underlying bit mask
 mask: MaskInt,
+
+/// The integer type used to represent a board
+pub const MaskInt = u64;
+
+/// The integer type used to shift a mask
+pub const ShiftInt = std.math.Log2Int(MaskInt);
 
 /// Default kind of ``BitBoard`` implementation
 pub const default_impl = Impl.math;
@@ -32,8 +38,8 @@ pub const Impl = enum {
 };
 
 const impl = switch (zaplum.options.bit_board_impl) {
-    .math => @import("MathImpl.zig"),
-    .lookup => @import("LookupImpl.zig"),
+    .math => MathImpl,
+    .lookup => LookupImpl,
 };
 
 /// Creates a board with no squares set.
