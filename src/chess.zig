@@ -1,12 +1,12 @@
 pub const BitBoard = @import("chess/BitBoard.zig");
-/// The number of squares on a board
-pub const board_size: IndexInt = 64;
+pub const Color = @import("chess/color.zig").Color;
+pub const Side = @import("chess/color.zig").Side;
 
 /// The integer type used to index a board
 pub const IndexInt = u8;
 
-pub const Color = @import("chess/color.zig").Color;
-pub const Side = @import("chess/color.zig").Side;
+/// The number of squares on a board
+pub const board_size: IndexInt = 64;
 
 /// A range of squares within a board
 pub const Range = struct {
