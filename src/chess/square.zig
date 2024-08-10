@@ -24,7 +24,61 @@ pub const Square = enum(chess.IndexInt) {
         return @intFromEnum(self);
     }
 
+    pub fn rank(self: Square) Rank {
+        return Rank.fromU3(@intCast(self.toIndex() / 8));
+    }
+
+    pub fn file(self: Square) File {
+        return File.fromU3(@intCast(self.toIndex() % 8));
+    }
+
     pub fn format(self: Square, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+        try writer.writeAll(@tagName(self));
+    }
+};
+
+pub const Rank = enum(u3) {
+    one = 0,
+    two = 1,
+    three = 2,
+    four = 3,
+    five = 4,
+    six = 5,
+    seven = 6,
+    eight = 7,
+
+    pub fn fromU3(index: u3) Rank {
+        return @enumFromInt(index);
+    }
+
+    pub fn toU3(self: Rank) u3 {
+        return @intFromEnum(self);
+    }
+
+    pub fn format(self: Rank, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+        try writer.writeByte(@as(u8, self.toU3()) + '1');
+    }
+};
+
+pub const File = enum(u3) {
+    a = 0,
+    b = 1,
+    c = 2,
+    d = 3,
+    e = 4,
+    f = 5,
+    g = 6,
+    h = 7,
+
+    pub fn fromU3(index: u3) File {
+        return @enumFromInt(index);
+    }
+
+    pub fn toU3(self: File) u3 {
+        return @intFromEnum(self);
+    }
+
+    pub fn format(self: File, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
         try writer.writeAll(@tagName(self));
     }
 };
@@ -52,15 +106,101 @@ test "square to index" {
 }
 
 test "square format" {
-    try testFormatSquare("a1", Square.a1);
-    try testFormatSquare("a8", Square.a8);
-    try testFormatSquare("h1", Square.h1);
-    try testFormatSquare("h8", Square.h8);
-    try testFormatSquare("none", Square.none);
+    try testFormat("a1", Square.a1);
+    try testFormat("a8", Square.a8);
+    try testFormat("h1", Square.h1);
+    try testFormat("h8", Square.h8);
+    try testFormat("none", Square.none);
 }
 
-fn testFormatSquare(expected: []const u8, square: Square) !void {
-    var buf = [5:0]u8{ 0, 0, 0, 0, 0 };
-    const actual = try std.fmt.bufPrintZ(buf[0..], "{}", .{square});
+test "rank zero-indexed backing value" {
+    try testing.expectEqual(@as(u3, 0), @intFromEnum(Rank.one));
+    try testing.expectEqual(@as(u3, 7), @intFromEnum(Rank.eight));
+}
+
+test "file zero-indexed backing value" {
+    try testing.expectEqual(@as(u3, 0), @intFromEnum(File.a));
+    try testing.expectEqual(@as(u3, 7), @intFromEnum(File.h));
+}
+
+test "file fromU3" {
+    for (0..8) |i| {
+        const index: u3 = @intCast(i);
+        try testing.expectEqual(@as(File, @enumFromInt(index)), File.fromU3(index));
+    }
+}
+
+test "file toU3" {
+    for (0..8) |i| {
+        const index: u3 = @intCast(i);
+        try testing.expectEqual(index, File.fromU3(index).toU3());
+    }
+}
+
+test "rank fromU3" {
+    for (0..8) |i| {
+        const index: u3 = @intCast(i);
+        try testing.expectEqual(@as(Rank, @enumFromInt(index)), Rank.fromU3(index));
+    }
+}
+
+test "rank toU3" {
+    for (0..8) |i| {
+        const index: u3 = @intCast(i);
+        try testing.expectEqual(index, Rank.fromU3(index).toU3());
+    }
+}
+
+test "file from square" {
+    try testing.expectEqual(File.a, Square.a1.file());
+    try testing.expectEqual(File.a, Square.a2.file());
+    try testing.expectEqual(File.b, Square.b2.file());
+    try testing.expectEqual(File.c, Square.c3.file());
+    try testing.expectEqual(File.d, Square.d4.file());
+    try testing.expectEqual(File.e, Square.e5.file());
+    try testing.expectEqual(File.f, Square.f6.file());
+    try testing.expectEqual(File.g, Square.g7.file());
+    try testing.expectEqual(File.h, Square.h1.file());
+    try testing.expectEqual(File.h, Square.h8.file());
+}
+
+test "rank from square" {
+    try testing.expectEqual(Rank.one, Square.a1.rank());
+    try testing.expectEqual(Rank.two, Square.a2.rank());
+    try testing.expectEqual(Rank.two, Square.b2.rank());
+    try testing.expectEqual(Rank.three, Square.c3.rank());
+    try testing.expectEqual(Rank.four, Square.d4.rank());
+    try testing.expectEqual(Rank.five, Square.e5.rank());
+    try testing.expectEqual(Rank.six, Square.f6.rank());
+    try testing.expectEqual(Rank.seven, Square.g7.rank());
+    try testing.expectEqual(Rank.one, Square.h1.rank());
+    try testing.expectEqual(Rank.eight, Square.h8.rank());
+}
+
+test "format file" {
+    try testFormat("a", File.a);
+    try testFormat("b", File.b);
+    try testFormat("c", File.c);
+    try testFormat("d", File.d);
+    try testFormat("e", File.e);
+    try testFormat("f", File.f);
+    try testFormat("g", File.g);
+    try testFormat("h", File.h);
+}
+
+test "format rank" {
+    try testFormat("1", Rank.one);
+    try testFormat("2", Rank.two);
+    try testFormat("3", Rank.three);
+    try testFormat("4", Rank.four);
+    try testFormat("5", Rank.five);
+    try testFormat("6", Rank.six);
+    try testFormat("7", Rank.seven);
+    try testFormat("8", Rank.eight);
+}
+
+fn testFormat(expected: []const u8, data: anytype) !void {
+    var buf = [8]u8{ 0, 0, 0, 0, 0, 0, 0, 0 };
+    const actual = try std.fmt.bufPrintZ(buf[0..], "{}", .{data});
     try testing.expectEqualStrings(expected, actual);
 }

@@ -1,8 +1,12 @@
 const color = @import("chess/color.zig");
+const square = @import("chess/square.zig");
+
 pub const BitBoard = @import("chess/BitBoard.zig");
 pub const Color = color.Color;
+pub const File = square.File;
+pub const Rank = square.Rank;
 pub const Side = color.Side;
-pub const Square = @import("chess/square.zig").Square;
+pub const Square = square.Square;
 
 /// The integer type used to index a board
 pub const IndexInt = u8;
