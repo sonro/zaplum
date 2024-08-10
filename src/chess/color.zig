@@ -23,6 +23,10 @@ pub const Color = enum(u1) {
         return Color.fromU1(@truncate(side.toU2()));
     }
 
+    pub fn opposite(self: Color) Color {
+        return @enumFromInt(self.toU1() ^ 1);
+    }
+
     pub fn format(self: Color, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
         try writer.writeAll(@tagName(self));
     }
@@ -41,6 +45,10 @@ pub const Side = enum(u2) {
 
     pub fn fromU2(value: u2) Side {
         return @enumFromInt(value);
+    }
+
+    pub fn opposite(self: Side) Side {
+        return @enumFromInt(self.toU2() ^ 1);
     }
 
     pub fn format(self: Side, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
@@ -89,6 +97,30 @@ test "color from side" {
     try testing.expectEqual(Color.black, try Color.fromSide(.black));
     const res = Color.fromSide(.both);
     try testing.expectError(error.InvalidColor, res);
+}
+
+test "color opposite white is black" {
+    try testing.expectEqual(Color.black, Color.white.opposite());
+}
+
+test "color opposite black is white" {
+    try testing.expectEqual(Color.white, Color.black.opposite());
+}
+
+test "side opposite white is black" {
+    try testing.expectEqual(Side.black, Side.white.opposite());
+}
+
+test "side opposite black is white" {
+    try testing.expectEqual(Side.white, Side.black.opposite());
+}
+
+test "side opposite both is none" {
+    try testing.expectEqual(Side.none, Side.both.opposite());
+}
+
+test "side opposite none is both" {
+    try testing.expectEqual(Side.both, Side.none.opposite());
 }
 
 test "format color" {

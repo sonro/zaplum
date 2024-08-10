@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Chess module
 
 - `Placement` board representation.
+- `Color` and `Side` enums now have `opposite` method.
 
 ## [0.1.1] - 2024-08-10
 
