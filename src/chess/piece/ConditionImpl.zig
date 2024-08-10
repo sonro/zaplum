@@ -1,5 +1,3 @@
-const Self = @This();
-
 const std = @import("std");
 
 const chess = @import("../../chess.zig");
@@ -146,5 +144,5 @@ pub fn char(self: Piece) u8 {
 
 comptime {
     const tests = @import("tests.zig");
-    _ = tests.testImpl(Self);
+    _ = tests.TestImpl(@This());
 }

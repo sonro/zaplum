@@ -64,5 +64,5 @@ fn initLut() [2][size]MaskInt {
 
 comptime {
     const tests = @import("tests.zig");
-    _ = tests.testImpl(@This());
+    _ = tests.TestImpl(@This());
 }

@@ -5,7 +5,7 @@ const chess = @import("../../chess.zig");
 const Side = chess.Side;
 const Piece = chess.Piece;
 
-pub fn testImpl(comptime impl: type) type {
+pub fn TestImpl(comptime Impl: type) type {
     return struct {
         test "white pieces side" {
             const pieces = [6]Piece{
@@ -18,7 +18,7 @@ pub fn testImpl(comptime impl: type) type {
             };
 
             for (pieces) |piece| {
-                try testing.expectEqual(Side.white, impl.side(piece));
+                try testing.expectEqual(Side.white, Impl.side(piece));
             }
         }
 
@@ -33,7 +33,7 @@ pub fn testImpl(comptime impl: type) type {
             };
 
             for (pieces) |piece| {
-                try testing.expectEqual(Side.black, impl.side(piece));
+                try testing.expectEqual(Side.black, Impl.side(piece));
             }
         }
 
@@ -202,63 +202,63 @@ pub fn testImpl(comptime impl: type) type {
         }
 
         fn testKind(expected: Piece.Kind, piece: Piece) !void {
-            try testing.expectEqual(expected, impl.kind(piece));
+            try testing.expectEqual(expected, Impl.kind(piece));
         }
 
         fn testHumanValue(expected: i8, piece: Piece) !void {
-            try testing.expectEqual(expected, impl.humanValue(piece));
+            try testing.expectEqual(expected, Impl.humanValue(piece));
         }
 
         fn testIsBig(piece: Piece) !void {
-            try testing.expect(impl.isBig(piece));
+            try testing.expect(Impl.isBig(piece));
         }
 
         fn testIsNotBig(piece: Piece) !void {
-            try testing.expect(!impl.isBig(piece));
+            try testing.expect(!Impl.isBig(piece));
         }
 
         fn testIsMinor(piece: Piece) !void {
-            try testing.expect(impl.isMinor(piece));
+            try testing.expect(Impl.isMinor(piece));
         }
 
         fn testIsNotMinor(piece: Piece) !void {
-            try testing.expect(!impl.isMinor(piece));
+            try testing.expect(!Impl.isMinor(piece));
         }
 
         fn testIsMajor(piece: Piece) !void {
-            try testing.expect(impl.isMajor(piece));
+            try testing.expect(Impl.isMajor(piece));
         }
 
         fn testIsNotMajor(piece: Piece) !void {
-            try testing.expect(!impl.isMajor(piece));
+            try testing.expect(!Impl.isMajor(piece));
         }
 
         fn testIsSlider(piece: Piece) !void {
-            try testing.expect(impl.isSlider(piece));
+            try testing.expect(Impl.isSlider(piece));
         }
 
         fn testIsNotSlider(piece: Piece) !void {
-            try testing.expect(!impl.isSlider(piece));
+            try testing.expect(!Impl.isSlider(piece));
         }
 
         fn testIsDiagonalSlider(piece: Piece) !void {
-            try testing.expect(impl.isDiagonalSlider(piece));
+            try testing.expect(Impl.isDiagonalSlider(piece));
         }
 
         fn testIsNotDiagonalSlider(piece: Piece) !void {
-            try testing.expect(!impl.isDiagonalSlider(piece));
+            try testing.expect(!Impl.isDiagonalSlider(piece));
         }
 
         fn testIsOrthogonalSlider(piece: Piece) !void {
-            try testing.expect(impl.isOrthogonalSlider(piece));
+            try testing.expect(Impl.isOrthogonalSlider(piece));
         }
 
         fn testIsNotOrthogonalSlider(piece: Piece) !void {
-            try testing.expect(!impl.isOrthogonalSlider(piece));
+            try testing.expect(!Impl.isOrthogonalSlider(piece));
         }
 
         fn testChar(expected: u8, piece: Piece) !void {
-            try testing.expectEqual(expected, impl.char(piece));
+            try testing.expectEqual(expected, Impl.char(piece));
         }
     };
 }

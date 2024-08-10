@@ -7,8 +7,6 @@ const Range = chess.Range;
 const size = chess.board_size;
 const IndexInt = chess.IndexInt;
 
-const MathImpl = @This();
-
 pub fn setValue(mask: *MaskInt, index: IndexInt, value: bool) void {
     const bit = maskBit(index);
     const new_bit = bit & std.math.boolMask(MaskInt, value);
@@ -59,5 +57,5 @@ pub fn createRangeMask(range: Range, value: bool) MaskInt {
 
 comptime {
     const tests = @import("tests.zig");
-    _ = tests.testImpl(@This());
+    _ = tests.TestImpl(@This());
 }

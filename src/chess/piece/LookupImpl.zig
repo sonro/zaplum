@@ -1,5 +1,3 @@
-const Self = @This();
-
 const std = @import("std");
 
 const chess = @import("../../chess.zig");
@@ -70,5 +68,5 @@ fn Lut(comptime T: type, comptime function: fn (Piece) T) [Piece.count]T {
 
 comptime {
     const tests = @import("tests.zig");
-    _ = tests.testImpl(Self);
+    _ = tests.TestImpl(@This());
 }
