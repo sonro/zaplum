@@ -33,6 +33,7 @@ pub const Side = enum(u2) {
     white = 0,
     black = 1,
     both = 2,
+    none = 3,
 
     pub fn toU2(self: Side) u2 {
         return @intFromEnum(self);
@@ -99,6 +100,7 @@ test "format side" {
     try testFormat("white", Side.white);
     try testFormat("black", Side.black);
     try testFormat("both", Side.both);
+    try testFormat("none", Side.none);
 }
 
 fn testFormat(expected: []const u8, data: anytype) !void {
