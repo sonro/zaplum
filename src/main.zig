@@ -7,6 +7,7 @@ pub const std_options = .{
 
 pub const zaplum_options = zaplum.Options{
     .bit_board_impl = .lookup,
+    .piece_impl = .lookup,
 };
 
 pub fn main() !void {

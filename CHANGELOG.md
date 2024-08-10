@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Color` and `Side` enums.
 - `Square`, `Rank`, `File` and `RankFile` enums.
+- `Piece` and `Piece.Kind` enums.
 
 ## [0.1.0] - 2024-08-06
 
