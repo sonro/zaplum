@@ -9,5 +9,6 @@ comptime {
     _ = @import("chess/piece.zig");
     _ = @import("chess/piece/ConditionImpl.zig");
     _ = @import("chess/piece/LookupImpl.zig");
+    _ = @import("chess/Placement.zig");
     _ = @import("chess/square.zig");
 }

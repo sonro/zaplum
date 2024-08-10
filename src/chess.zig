@@ -5,6 +5,7 @@ pub const BitBoard = @import("chess/BitBoard.zig");
 pub const Color = color.Color;
 pub const File = square.File;
 pub const Piece = @import("chess/piece.zig").Piece;
+pub const Placement = @import("chess/Placement.zig");
 pub const Rank = square.Rank;
 pub const RankFile = square.RankFile;
 pub const Side = color.Side;
