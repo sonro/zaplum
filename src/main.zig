@@ -15,5 +15,10 @@ pub fn main() !void {
 
     var board = zaplum.chess.BitBoard.empty;
     board.setRangeValue(.{ .start = 0, .end = 16 }, true);
-    std.debug.print("{s}", .{board});
+    std.debug.print("{s}\n", .{board});
+
+    // print placement
+
+    const placement = zaplum.chess.Placement.starting;
+    std.debug.print("{s}\n", .{placement});
 }

@@ -35,6 +35,10 @@ pub fn set(self: *Placement, square: Square, piece: Piece) void {
     self.squares[square.toIndex()] = piece;
 }
 
+pub fn format(self: Placement, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+    return implFormat(Placement, self, writer);
+}
+
 pub const Packed = struct {
     squares: Array,
 
@@ -60,7 +64,25 @@ pub const Packed = struct {
         }
         return self;
     }
+
+    pub fn format(self: Packed, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+        return implFormat(Packed, self, writer);
+    }
 };
+
+fn implFormat(comptime Self: type, self: Self, writer: anytype) !void {
+    var rank: usize = 8;
+    while (rank > 0) {
+        rank -= 1;
+        for (0..8) |file| {
+            const rf = chess.RankFile.fromU3(@intCast(rank), @intCast(file));
+            const sq = Square.fromRankFile(rf);
+            const piece = self.get(sq);
+            try writer.print(" {}", .{piece});
+        }
+        try writer.writeByte('\n');
+    }
+}
 
 comptime {
     _ = TestImpl(Placement);
@@ -120,7 +142,37 @@ fn TestImpl(comptime Impl: type) type {
             try testing.expectEqual(Piece.white_pawn, placement.get(.a2));
         }
 
+        test "format empty" {
+            const expected = comptime expectedEmptyFormat();
+            try testFormat(expected, Impl.empty);
+        }
+
+        test "format starting" {
+            try testFormat(expectedStartingFormat, Impl.starting);
+        }
+
         const TestSqPc = struct { Square, Piece };
+
+        const expectedStartingFormat =
+            \\ r n b q k b n r
+            \\ p p p p p p p p
+            \\ - - - - - - - -
+            \\ - - - - - - - -
+            \\ - - - - - - - -
+            \\ - - - - - - - -
+            \\ P P P P P P P P
+            \\ R N B Q K B N R
+            \\
+        ;
+
+        fn expectedEmptyFormat() [:0]const u8 {
+            var expected: [:0]const u8 = &.{};
+            for (0..8) |_| {
+                const col = " - - - - - - - -\n";
+                expected = expected ++ col;
+            }
+            return expected;
+        }
 
         fn testSqPcRepeat(start: Square, last: Square, piece: Piece, comptime len: usize) [len]TestSqPc {
             var list: [len]TestSqPc = undefined;
@@ -136,6 +188,13 @@ fn TestImpl(comptime Impl: type) type {
             for (expected) |exp| {
                 try testing.expectEqual(exp[1], placement.get(exp[0]));
             }
+        }
+
+        fn testFormat(expected: []const u8, placement: Impl) !void {
+            var buf: [256]u8 = undefined;
+            var fbs = std.io.fixedBufferStream(&buf);
+            try fbs.writer().print("{}", .{placement});
+            try testing.expectEqualStrings(expected, fbs.getWritten());
         }
     };
 }
