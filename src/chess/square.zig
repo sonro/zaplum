@@ -55,6 +55,8 @@ pub const Rank = enum(u3) {
     seven = 6,
     eight = 7,
 
+    const chars = "12345678";
+
     pub fn fromU3(index: u3) Rank {
         return @enumFromInt(index);
     }
@@ -64,7 +66,11 @@ pub const Rank = enum(u3) {
     }
 
     pub fn format(self: Rank, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
-        try writer.writeByte(@as(u8, self.toU3()) + '1');
+        try writer.writeByte(self.char());
+    }
+
+    pub fn char(self: Rank) u8 {
+        return chars[self.toU3()];
     }
 };
 
@@ -87,7 +93,11 @@ pub const File = enum(u3) {
     }
 
     pub fn format(self: File, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
-        try writer.writeAll(@tagName(self));
+        try writer.writeByte(self.char());
+    }
+
+    pub fn char(self: File) u8 {
+        return @tagName(self)[0];
     }
 };
 
@@ -245,6 +255,17 @@ test "format file" {
     try testFormat("h", File.h);
 }
 
+test "file char" {
+    try testing.expectEqual('a', File.a.char());
+    try testing.expectEqual('b', File.b.char());
+    try testing.expectEqual('c', File.c.char());
+    try testing.expectEqual('d', File.d.char());
+    try testing.expectEqual('e', File.e.char());
+    try testing.expectEqual('f', File.f.char());
+    try testing.expectEqual('g', File.g.char());
+    try testing.expectEqual('h', File.h.char());
+}
+
 test "format rank" {
     try testFormat("1", Rank.one);
     try testFormat("2", Rank.two);
@@ -254,6 +275,17 @@ test "format rank" {
     try testFormat("6", Rank.six);
     try testFormat("7", Rank.seven);
     try testFormat("8", Rank.eight);
+}
+
+test "rank char" {
+    try testing.expectEqual('1', Rank.one.char());
+    try testing.expectEqual('2', Rank.two.char());
+    try testing.expectEqual('3', Rank.three.char());
+    try testing.expectEqual('4', Rank.four.char());
+    try testing.expectEqual('5', Rank.five.char());
+    try testing.expectEqual('6', Rank.six.char());
+    try testing.expectEqual('7', Rank.seven.char());
+    try testing.expectEqual('8', Rank.eight.char());
 }
 
 test "rank file from index" {
