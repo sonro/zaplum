@@ -35,71 +35,107 @@ pub fn set(self: *Placement, square: Square, piece: Piece) void {
     self.squares[square.toIndex()] = piece;
 }
 
-test "empty" {
-    try testPieces(&testSqPcRepeat(.a1, .h8, .none, board_size), empty);
-}
+pub const Packed = struct {
+    squares: Array,
 
-test "starting white big pieces" {
-    const expected = [8]TestSqPc{
-        .{ .a1, .white_rook },
-        .{ .b1, .white_knight },
-        .{ .c1, .white_bishop },
-        .{ .d1, .white_queen },
-        .{ .e1, .white_king },
-        .{ .f1, .white_bishop },
-        .{ .g1, .white_knight },
-        .{ .h1, .white_rook },
-    };
-    try testPieces(&expected, starting);
-}
+    pub const empty = Packed{ .squares = Array.initAllTo(Piece.none.toU4()) };
+    pub const starting = initStarting();
 
-test "starting black big pieces" {
-    const expected = [8]TestSqPc{
-        .{ .a8, .black_rook },
-        .{ .b8, .black_knight },
-        .{ .c8, .black_bishop },
-        .{ .d8, .black_queen },
-        .{ .e8, .black_king },
-        .{ .f8, .black_bishop },
-        .{ .g8, .black_knight },
-        .{ .h8, .black_rook },
-    };
-    try testPieces(&expected, starting);
-}
+    pub const Array = std.PackedIntArray(u4, board_size);
 
-test "starting white pawns" {
-    try testPieces(&testSqPcRepeat(.a2, .h2, .white_pawn, 8), starting);
-}
-
-test "starting black pawns" {
-    try testPieces(&testSqPcRepeat(.a7, .h7, .black_pawn, 8), starting);
-}
-
-test "starting no pieces" {
-    try testPieces(&testSqPcRepeat(.a3, .h6, .none, 32), starting);
-}
-
-test "get set get" {
-    var placement = empty;
-    try testing.expectEqual(Piece.none, placement.get(.a1));
-    placement.set(.a2, .white_pawn);
-    try testing.expectEqual(Piece.white_pawn, placement.get(.a2));
-}
-
-const TestSqPc = struct { Square, Piece };
-
-fn testSqPcRepeat(start: Square, last: Square, piece: Piece, comptime len: usize) [len]TestSqPc {
-    var list: [len]TestSqPc = undefined;
-    const start_index = start.toIndex();
-    const end_index = last.toIndex() + 1;
-    for (start_index..end_index, 0..) |sq, i| {
-        list[i] = .{ @enumFromInt(sq), piece };
+    pub fn get(self: Packed, square: Square) Piece {
+        assert(square != .none);
+        return Piece.fromU4(self.squares.get(square.toIndex()));
     }
-    return list;
+
+    pub fn set(self: *Packed, square: Square, piece: Piece) void {
+        assert(square != .none);
+        self.squares.set(square.toIndex(), piece.toU4());
+    }
+
+    fn initStarting() Packed {
+        var self = Packed{ .squares = undefined };
+        for (Placement.starting.squares, 0..) |piece, i| {
+            self.squares.set(i, piece.toU4());
+        }
+        return self;
+    }
+};
+
+comptime {
+    _ = TestImpl(Placement);
+    _ = TestImpl(Packed);
 }
 
-fn testPieces(expected: []const TestSqPc, placement: Placement) !void {
-    for (expected) |exp| {
-        try testing.expectEqual(exp[1], placement.get(exp[0]));
-    }
+fn TestImpl(comptime Impl: type) type {
+    return struct {
+        test "empty" {
+            try testPieces(&testSqPcRepeat(.a1, .h8, .none, board_size), Impl.empty);
+        }
+
+        test "starting white big pieces" {
+            const expected = [8]TestSqPc{
+                .{ .a1, .white_rook },
+                .{ .b1, .white_knight },
+                .{ .c1, .white_bishop },
+                .{ .d1, .white_queen },
+                .{ .e1, .white_king },
+                .{ .f1, .white_bishop },
+                .{ .g1, .white_knight },
+                .{ .h1, .white_rook },
+            };
+            try testPieces(&expected, Impl.starting);
+        }
+
+        test "starting black big pieces" {
+            const expected = [8]TestSqPc{
+                .{ .a8, .black_rook },
+                .{ .b8, .black_knight },
+                .{ .c8, .black_bishop },
+                .{ .d8, .black_queen },
+                .{ .e8, .black_king },
+                .{ .f8, .black_bishop },
+                .{ .g8, .black_knight },
+                .{ .h8, .black_rook },
+            };
+            try testPieces(&expected, Impl.starting);
+        }
+
+        test "starting white pawns" {
+            try testPieces(&testSqPcRepeat(.a2, .h2, .white_pawn, 8), Impl.starting);
+        }
+
+        test "starting black pawns" {
+            try testPieces(&testSqPcRepeat(.a7, .h7, .black_pawn, 8), Impl.starting);
+        }
+
+        test "starting no pieces" {
+            try testPieces(&testSqPcRepeat(.a3, .h6, .none, 32), Impl.starting);
+        }
+
+        test "get set get" {
+            var placement = Impl.empty;
+            try testing.expectEqual(Piece.none, placement.get(.a1));
+            placement.set(.a2, .white_pawn);
+            try testing.expectEqual(Piece.white_pawn, placement.get(.a2));
+        }
+
+        const TestSqPc = struct { Square, Piece };
+
+        fn testSqPcRepeat(start: Square, last: Square, piece: Piece, comptime len: usize) [len]TestSqPc {
+            var list: [len]TestSqPc = undefined;
+            const start_index = start.toIndex();
+            const end_index = last.toIndex() + 1;
+            for (start_index..end_index, 0..) |sq, i| {
+                list[i] = .{ @enumFromInt(sq), piece };
+            }
+            return list;
+        }
+
+        fn testPieces(expected: []const TestSqPc, placement: Impl) !void {
+            for (expected) |exp| {
+                try testing.expectEqual(exp[1], placement.get(exp[0]));
+            }
+        }
+    };
 }
