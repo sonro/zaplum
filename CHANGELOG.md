@@ -9,7 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `Color` and `Side` to `chess` module.
+#### Chess module
+
+- `Color` and `Side` enums.
+- `Square`, `Rank`, `File` and `RankFile` enums.
 
 ## [0.1.0] - 2024-08-06
 
