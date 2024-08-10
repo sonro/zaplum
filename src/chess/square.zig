@@ -20,8 +20,16 @@ pub const Square = enum(chess.IndexInt) {
         return @enumFromInt(index);
     }
 
+    pub fn fromRankFile(rf: RankFile) Square {
+        return @enumFromInt(rf.toIndex());
+    }
+
     pub fn toIndex(self: Square) chess.IndexInt {
         return @intFromEnum(self);
+    }
+
+    pub fn toRankFile(self: Square) RankFile {
+        return RankFile.fromU3(self.rank().toU3(), self.file().toU3());
     }
 
     pub fn rank(self: Square) Rank {
@@ -83,6 +91,33 @@ pub const File = enum(u3) {
     }
 };
 
+pub const RankFile = struct {
+    rank: Rank,
+    file: File,
+
+    pub fn fromIndex(index: chess.IndexInt) RankFile {
+        return RankFile{
+            .rank = Rank.fromU3(@intCast(index / 8)),
+            .file = File.fromU3(@intCast(index % 8)),
+        };
+    }
+
+    pub fn fromU3(rank: u3, file: u3) RankFile {
+        return RankFile{
+            .rank = Rank.fromU3(rank),
+            .file = File.fromU3(file),
+        };
+    }
+
+    pub fn toIndex(self: RankFile) chess.IndexInt {
+        return @as(u8, self.rank.toU3()) * 8 + self.file.toU3();
+    }
+
+    pub fn format(self: RankFile, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+        try writer.print("{s}{s}", .{ self.file, self.rank });
+    }
+};
+
 test "square little endian order" {
     try testing.expectEqual(Square.a1, @as(Square, @enumFromInt(0 * 8 + 0)));
     try testing.expectEqual(Square.a8, @as(Square, @enumFromInt(8 * 7 + 0)));
@@ -98,10 +133,32 @@ test "square from index" {
     try testing.expectEqual(Square.none, Square.fromIndex(chess.board_size));
 }
 
+test "square from rank file" {
+    for (0..chess.board_size) |i| {
+        const index: chess.IndexInt = @intCast(i);
+        const rank = Rank.fromU3(@intCast(index / 8));
+        const file = File.fromU3(@intCast(index % 8));
+        const expected = Square.fromIndex(index);
+        const actual = Square.fromRankFile(RankFile{ .rank = rank, .file = file });
+        try testing.expectEqual(expected, actual);
+    }
+}
+
 test "square to index" {
     for (0..chess.board_size) |i| {
         const index: u8 = @intCast(i);
         try testing.expectEqual(index, Square.toIndex(@as(Square, @enumFromInt(index))));
+    }
+}
+
+test "square to rank file" {
+    for (0..chess.board_size) |i| {
+        const index: chess.IndexInt = @intCast(i);
+        const rank = Rank.fromU3(@intCast(index / 8));
+        const file = File.fromU3(@intCast(index % 8));
+        const expected = RankFile{ .rank = rank, .file = file };
+        const actual = Square.toRankFile(Square.fromIndex(index));
+        try testing.expectEqual(expected, actual);
     }
 }
 
@@ -197,6 +254,45 @@ test "format rank" {
     try testFormat("6", Rank.six);
     try testFormat("7", Rank.seven);
     try testFormat("8", Rank.eight);
+}
+
+test "rank file from index" {
+    for (0..chess.board_size) |i| {
+        const index: chess.IndexInt = @intCast(i);
+        const rank = Rank.fromU3(@intCast(index / 8));
+        const file = File.fromU3(@intCast(index % 8));
+        const expected = RankFile{ .rank = rank, .file = file };
+        const actual = RankFile.fromIndex(index);
+        try testing.expectEqual(expected, actual);
+    }
+}
+
+test "rank file from u3" {
+    for (0..chess.board_size) |i| {
+        const index: chess.IndexInt = @intCast(i);
+        const rank = Rank.fromU3(@intCast(index / 8));
+        const file = File.fromU3(@intCast(index % 8));
+        const expected = RankFile{ .rank = rank, .file = file };
+        const actual = RankFile.fromU3(rank.toU3(), file.toU3());
+        try testing.expectEqual(expected, actual);
+    }
+}
+
+test "rank file to index" {
+    for (0..chess.board_size) |i| {
+        const index: chess.IndexInt = @intCast(i);
+        const rank = Rank.fromU3(@intCast(index / 8));
+        const file = File.fromU3(@intCast(index % 8));
+        const rank_file = RankFile{ .rank = rank, .file = file };
+        try testing.expectEqual(index, rank_file.toIndex());
+    }
+}
+
+test "rank file format" {
+    try testFormat("a1", RankFile.fromIndex(0));
+    try testFormat("b1", RankFile.fromIndex(1));
+    try testFormat("a2", RankFile.fromIndex(8));
+    try testFormat("h8", RankFile.fromIndex(63));
 }
 
 fn testFormat(expected: []const u8, data: anytype) !void {
