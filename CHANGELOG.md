@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `Color` and `Side` to `chess` module.
+
 ## [0.1.0] - 2024-08-06
 
 ### Added
