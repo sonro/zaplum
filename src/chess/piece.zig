@@ -39,9 +39,11 @@ pub const Piece = enum(u4) {
     /// Array of all pieces excluding none
     pub const hard_values = initValues(hard_count);
 
-    /// Implementation for information about pieces
+    /// Implementation for piece information
     pub const Impl = enum {
+        /// Boolean logic
         condition,
+        /// Lookup tables
         lookup,
     };
 
@@ -72,30 +74,43 @@ pub const Piece = enum(u4) {
         return impl.kind(self);
     }
 
+    /// P = 1
+    /// N and B = 3
+    /// R = 5
+    /// Q = 9
+    /// K = 50
+    ///
+    /// Black pieces are negative.
     pub fn humanValue(self: Piece) i8 {
         return impl.humanValue(self);
     }
 
+    /// Not pawns
     pub fn isBig(self: Piece) bool {
         return impl.isBig(self);
     }
 
+    /// Rooks, queens, and kings
     pub fn isMajor(self: Piece) bool {
         return impl.isMajor(self);
     }
 
+    /// Knights and bishops
     pub fn isMinor(self: Piece) bool {
         return impl.isMinor(self);
     }
 
+    /// Bishops, rooks, and queens
     pub fn isSlider(self: Piece) bool {
         return impl.isSlider(self);
     }
 
+    /// Bishops and queens
     pub fn isDiagonalSlider(self: Piece) bool {
         return impl.isDiagonalSlider(self);
     }
 
+    /// Rooks and queens
     pub fn isOrthogonalSlider(self: Piece) bool {
         return impl.isOrthogonalSlider(self);
     }
@@ -123,7 +138,9 @@ pub const Piece = enum(u4) {
         /// Excludes `none`
         pub const hard_count = Kind.count - 1;
 
+        /// Array of all kinds including none
         pub const values = initKindValues(Kind.count);
+        /// Array of all kinds excluding none
         pub const hard_values = initKindValues(Kind.hard_count);
 
         pub fn fromU3(value: u3) Kind {
