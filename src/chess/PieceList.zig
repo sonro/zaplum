@@ -310,6 +310,17 @@ test "promote starting to queen" {
     try testPiece(list, .white_queen, &.{ .d1, .a8 });
 }
 
+test "slice copy by reference" {
+    const list = starting;
+    for (Piece.hard_values) |piece| {
+        const sliced = list.slice(piece);
+        const pce = piece.toU4();
+        const start = list.indicies[pce];
+        const end = start + list.lens[pce];
+        try testing.expectEqualSlices(Square, list.data[start..end], sliced);
+    }
+}
+
 fn testPiece(self: PieceList, piece: Piece, expected: []const Square) !void {
     try testing.expectEqualSlices(Square, expected, self.slice(piece));
     try testing.expectEqual(expected.len, self.count(piece));
