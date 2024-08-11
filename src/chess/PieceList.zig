@@ -1,3 +1,7 @@
+//! Array backed list of active pieces
+//!
+//! Supports removal and promotion, although doing so will invalidate
+//! existing indicies and therefore iterators.
 const PieceList = @This();
 
 const std = @import("std");
@@ -12,11 +16,16 @@ const Range = chess.Range;
 const IndexInt = chess.IndexInt;
 const Color = chess.Color;
 
+/// Backing array
 data: [capacity]Square,
+/// `data` start index for each piece
 indicies: Indicies,
+/// Number of each piece
 lens: Lens,
+/// Total number of pieces
 total: IndexInt,
 
+/// Size of the backing array
 pub const capacity: IndexInt = Piece.max;
 
 pub const empty = PieceList{
@@ -31,6 +40,8 @@ pub const starting = initStarting();
 const indicies_len = Piece.count;
 const lens_len = Piece.hard_count;
 
+/// In debug mode, assert no two pieces occupy the same square
+/// and the total number of pieces is correct.
 pub fn assertValid(self: *const PieceList) void {
     if (builtin.mode != .Debug) return;
     var seen: [chess.board_size]bool = undefined;
@@ -46,6 +57,7 @@ pub fn assertValid(self: *const PieceList) void {
     assert(total == self.total);
 }
 
+/// Slice of `Square` occupied by a `Piece`
 pub fn slice(self: *const PieceList, piece: Piece) []const Square {
     assert(piece != .none);
     const pce = piece.toU4();
@@ -54,18 +66,20 @@ pub fn slice(self: *const PieceList, piece: Piece) []const Square {
     return self.data[start..end];
 }
 
+/// The number of `Piece` on the board
 pub fn count(self: *const PieceList, piece: Piece) IndexInt {
     assert(piece != .none);
     return self.lens[piece.toU4()];
 }
 
+/// Get the square occupied by `piece` at `index`
 pub fn get(self: *const PieceList, piece: Piece, index: IndexInt) Square {
     const i = self.indicies[piece.toU4()] + index;
     assert(i < capacity);
     return self.data[i];
 }
 
-/// Adds a new piece to the list. Useful for building a piece.
+/// Adds a new piece to the list. Useful when loading a board.
 /// Use `set` to change an existing piece.
 pub fn append(self: *PieceList, piece: Piece, square: Square) void {
     assert(piece != .none);
@@ -78,6 +92,9 @@ pub fn append(self: *PieceList, piece: Piece, square: Square) void {
     self.total += 1;
 }
 
+/// Change the square occupied by `piece` at `index`.
+/// Asserts that the piece is already on the board.
+/// If removing a piece, use `remove`.
 pub fn set(self: *PieceList, piece: Piece, index: IndexInt, square: Square) void {
     assert(piece != .none);
     const pce = piece.toU4();
@@ -87,6 +104,9 @@ pub fn set(self: *PieceList, piece: Piece, index: IndexInt, square: Square) void
     self.data[i] = square;
 }
 
+/// Remove the piece at `index`.
+/// Asserts that the piece is already on the board.
+/// Will invalidate existing indicies for this `Piece`.
 pub fn remove(self: *PieceList, piece: Piece, index: IndexInt) void {
     assert(piece != .none);
     const pce = piece.toU4();
@@ -101,6 +121,11 @@ pub fn remove(self: *PieceList, piece: Piece, index: IndexInt) void {
     self.total -= 1;
 }
 
+/// Promote the `piece` at `index` to `to` on `square`.
+/// Asserts that the piece is already on the board.
+/// Asserts that `to` is a valid promotion.
+/// Will invalidate existing indicies for this `Piece`.
+/// May invalidate all indicies for this `piece`'s `Color`.
 pub fn promote(self: *PieceList, piece: Piece, index: IndexInt, square: Square, to: Piece.Kind) void {
     assert(piece.kind() == .pawn); // only pawns can promote
     assert(to != .none and to != .pawn and to != .king); // cannot promote to this
