@@ -3,7 +3,7 @@ const testing = std.testing;
 
 const chess = @import("../chess.zig");
 
-/// Can only be white or black. For both use `Side`
+/// Can only be white or black. For both or none, use `Side`
 pub const Color = enum(u1) {
     white = 0,
     black = 1,
@@ -32,7 +32,7 @@ pub const Color = enum(u1) {
     }
 };
 
-/// Can be white, black, or both. Prefer using `Color`
+/// Can be white, black, both, or none. Prefer using `Color`
 pub const Side = enum(u2) {
     white = 0,
     black = 1,
