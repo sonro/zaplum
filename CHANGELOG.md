@@ -13,8 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Placement` board representation.
 - `Placement.Packed` board representation.
-- `Color` and `Side` enums now have `opposite` method.
+- `Color` and `Side` enums `opposite` method.
 - `Rank` and `File` `char` methods.
+- `Piece` and `Piece.Kind` enums `values` and `hard_values` constants.
+- `Piece` from `Color` and `Piece.Kind` method.
 
 ## [0.1.1] - 2024-08-10
 

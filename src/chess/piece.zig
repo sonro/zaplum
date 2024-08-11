@@ -3,6 +3,7 @@ const testing = std.testing;
 
 const zaplum = @import("../zaplum.zig");
 const Side = zaplum.chess.Side;
+const Color = zaplum.chess.Color;
 
 const ConditionImpl = @import("piece/ConditionImpl.zig");
 const LookupImpl = @import("piece/LookupImpl.zig");
@@ -30,6 +31,13 @@ pub const Piece = enum(u4) {
     pub const hard_count = count - 1;
     /// Maximum number of playing pieces on a board
     pub const max = 32;
+    /// Maximum number of single pieces
+    pub const single_max = 10;
+
+    /// Array of all pieces including none
+    pub const values = initValues(count);
+    /// Array of all pieces excluding none
+    pub const hard_values = initValues(hard_count);
 
     /// Implementation for information about pieces
     pub const Impl = enum {
@@ -46,6 +54,10 @@ pub const Piece = enum(u4) {
 
     pub fn fromU4(value: u4) Piece {
         return @enumFromInt(value);
+    }
+
+    pub fn fromColorKind(color: Color, piece_kind: Kind) Piece {
+        return impl.fromColorKind(color, piece_kind);
     }
 
     pub fn toU4(self: Piece) u4 {
@@ -111,6 +123,9 @@ pub const Piece = enum(u4) {
         /// Excludes `none`
         pub const hard_count = Kind.count - 1;
 
+        pub const values = initKindValues(Kind.count);
+        pub const hard_values = initKindValues(Kind.hard_count);
+
         pub fn fromU3(value: u3) Kind {
             return @enumFromInt(value);
         }
@@ -124,6 +139,24 @@ pub const Piece = enum(u4) {
         }
     };
 };
+
+fn initValues(comptime count: u4) [count]Piece {
+    if (count > Piece.count) @compileError("Piece count exceeds maximum");
+    var result: [count]Piece = undefined;
+    for (0..count) |i| {
+        result[i] = @enumFromInt(i);
+    }
+    return result;
+}
+
+fn initKindValues(comptime count: u3) [count]Piece.Kind {
+    if (count > Piece.Kind.count) @compileError("Piece count exceeds maximum");
+    var result: [count]Piece.Kind = undefined;
+    for (0..count) |i| {
+        result[i] = @enumFromInt(i);
+    }
+    return result;
+}
 
 test "piece count includes none" {
     try testing.expectEqual(13, Piece.count);
@@ -157,6 +190,28 @@ test "piece to u4" {
     for (0..Piece.count) |i| {
         const index: u4 = @intCast(i);
         try testing.expectEqual(index, Piece.fromU4(index).toU4());
+    }
+}
+
+test "piece values" {
+    for (Piece.values, 0..) |piece, i| {
+        const index: u4 = @intCast(i);
+        try testing.expectEqual(index, piece.toU4());
+    }
+}
+
+test "piece hard values" {
+    for (Piece.hard_values, 0..) |piece, i| {
+        const index: u4 = @intCast(i);
+        try testing.expectEqual(index, piece.toU4());
+    }
+}
+
+test "piece from color kind" {
+    for (Piece.values) |piece| {
+        const kind = piece.kind();
+        const color = try Color.fromSide(piece.side());
+        try testing.expectEqual(piece, Piece.fromColorKind(color, kind));
     }
 }
 
@@ -264,6 +319,20 @@ test "piece char" {
     try testing.expectEqual('r', Piece.black_rook.char());
     try testing.expectEqual('q', Piece.black_queen.char());
     try testing.expectEqual('k', Piece.black_king.char());
+}
+
+test "kind values" {
+    for (Piece.Kind.values, 0..) |piece, i| {
+        const index: u3 = @intCast(i);
+        try testing.expectEqual(index, piece.toU3());
+    }
+}
+
+test "kind hard values" {
+    for (Piece.Kind.hard_values, 0..) |piece, i| {
+        const index: u3 = @intCast(i);
+        try testing.expectEqual(index, piece.toU3());
+    }
 }
 
 test "kind from u3" {

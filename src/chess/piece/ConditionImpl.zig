@@ -2,8 +2,18 @@ const std = @import("std");
 
 const chess = @import("../../chess.zig");
 const Side = chess.Side;
+const Color = chess.Color;
 const Piece = chess.Piece;
 const Kind = Piece.Kind;
+
+pub fn fromColorKind(color: Color, piece_kind: Kind) Piece {
+    if (piece_kind == .none) {
+        return .none;
+    }
+    var index = if (color == .white) 0 else @intFromEnum(Piece.black_pawn);
+    index += @intFromEnum(piece_kind);
+    return @enumFromInt(index);
+}
 
 pub fn side(self: Piece) Side {
     return switch (self) {

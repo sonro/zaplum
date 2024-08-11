@@ -4,6 +4,7 @@ const testing = std.testing;
 const chess = @import("../../chess.zig");
 const Side = chess.Side;
 const Piece = chess.Piece;
+const Color = chess.Color;
 
 pub fn TestImpl(comptime Impl: type) type {
     return struct {
@@ -201,6 +202,21 @@ pub fn TestImpl(comptime Impl: type) type {
             try testChar('k', .black_king);
         }
 
+        test "from color kind" {
+            try testFromColorKind(.white_pawn, .white, .pawn);
+            try testFromColorKind(.white_knight, .white, .knight);
+            try testFromColorKind(.white_bishop, .white, .bishop);
+            try testFromColorKind(.white_rook, .white, .rook);
+            try testFromColorKind(.white_queen, .white, .queen);
+            try testFromColorKind(.white_king, .white, .king);
+            try testFromColorKind(.black_pawn, .black, .pawn);
+            try testFromColorKind(.black_knight, .black, .knight);
+            try testFromColorKind(.black_bishop, .black, .bishop);
+            try testFromColorKind(.black_rook, .black, .rook);
+            try testFromColorKind(.black_queen, .black, .queen);
+            try testFromColorKind(.black_king, .black, .king);
+        }
+
         fn testKind(expected: Piece.Kind, piece: Piece) !void {
             try testing.expectEqual(expected, Impl.kind(piece));
         }
@@ -259,6 +275,10 @@ pub fn TestImpl(comptime Impl: type) type {
 
         fn testChar(expected: u8, piece: Piece) !void {
             try testing.expectEqual(expected, Impl.char(piece));
+        }
+
+        fn testFromColorKind(expected: Piece, color: Color, kind: Piece.Kind) !void {
+            try testing.expectEqual(expected, Impl.fromColorKind(color, kind));
         }
     };
 }
