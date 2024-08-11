@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Rank` and `File` `char` methods.
 - `Piece` and `Piece.Kind` enums `values` and `hard_values` constants.
 - `Piece` from `Color` and `Piece.Kind` method.
+- `PieceList` board representation.
 
 ## [0.1.1] - 2024-08-10
 
