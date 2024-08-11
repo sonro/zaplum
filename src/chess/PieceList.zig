@@ -1,4 +1,4 @@
-//! Array backed list of active pieces
+//! Array cacked list of active pieces
 //!
 //! Supports removal and promotion, although doing so will invalidate
 //! existing indicies and therefore iterators.
@@ -87,9 +87,7 @@ pub fn append(self: *PieceList, piece: Piece, square: Square) void {
     const i = self.indicies[pce] + self.lens[pce];
     assert(i < capacity); // over capacity for all pieces
     assert(i < self.indicies[pce + 1]); // over capacity for this piece
-    self.data[i] = square;
-    self.lens[pce] += 1;
-    self.total += 1;
+    self.appendAssumeValid(pce, square);
 }
 
 /// Change the square occupied by `piece` at `index`.
@@ -110,15 +108,10 @@ pub fn set(self: *PieceList, piece: Piece, index: IndexInt, square: Square) void
 pub fn remove(self: *PieceList, piece: Piece, index: IndexInt) void {
     assert(piece != .none);
     const pce = piece.toU4();
-    const piece_start = self.indicies[pce];
-    const target = piece_start + index;
+    const target = self.indicies[pce] + index;
     assert(target < capacity); // over capacity for all pieces
     assert(index < self.lens[pce]); // this piece has not yet been appended
-    self.lens[pce] -= 1;
-    const last = piece_start + self.lens[pce];
-    self.shiftRemove(target, last);
-    self.data[last] = .none;
-    self.total -= 1;
+    self.removeAssumeValid(pce, target);
 }
 
 /// Promote the `piece` at `index` to `to` on `square`.
@@ -129,16 +122,8 @@ pub fn remove(self: *PieceList, piece: Piece, index: IndexInt) void {
 pub fn promote(self: *PieceList, piece: Piece, index: IndexInt, square: Square, to: Piece.Kind) void {
     assert(piece.kind() == .pawn); // only pawns can promote
     assert(to != .none and to != .pawn and to != .king); // cannot promote to this
-    const color = Color.fromSide(piece.side()) catch unreachable;
-    const new = Piece.fromColorKind(color, to);
     self.remove(piece, index);
-    const start = self.indicies[piece.toU4() + 1] - 1;
-    const end = self.indicies[new.toU4() + 1] - 1;
-    self.shiftRemove(start, end);
-    var caps = PieceCaps.fromIndicies(self.indicies);
-    caps.promote(piece, new);
-    self.indicies = caps.toIndicies();
-    self.append(new, square);
+    self.promoteAssumeValid(piece, square, to);
 }
 
 pub fn format(self: PieceList, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
@@ -152,6 +137,37 @@ fn appendMultiple(self: *PieceList, piece: Piece, squares: []const Square) void 
     for (squares) |square| {
         self.append(piece, square);
     }
+}
+
+fn promoteAssumeValid(self: *PieceList, piece: Piece, square: Square, to: Piece.Kind) void {
+    const color = Color.fromSide(piece.side()) catch unreachable;
+    const new = Piece.fromColorKind(color, to);
+    const start = self.indicies[piece.toU4() + 1] - 1;
+    const end = self.indicies[new.toU4() + 1] - 1;
+    self.shiftRemove(start, end);
+    self.appendAssumeValid(new.toU4(), square);
+}
+
+fn appendAssumeValid(self: *PieceList, pce: u4, square: Square) void {
+    const i = self.indicies[pce] + self.lens[pce];
+    self.data[i] = square;
+    self.lens[pce] += 1;
+    self.total += 1;
+}
+
+fn removeAssumeValid(self: *PieceList, pce: u4, target: IndexInt) void {
+    const piece_start = self.indicies[pce];
+    self.lens[pce] -= 1;
+    const last = piece_start + self.lens[pce];
+    self.shiftRemove(target, last);
+    self.data[last] = .none;
+    self.total -= 1;
+}
+
+fn promoteIndicies(self: *PieceList, old: Piece, new: Piece) void {
+    var caps = PieceCaps.fromIndicies(self.indicies);
+    caps.promote(old, new);
+    self.indicies = caps.toIndicies();
 }
 
 fn shiftRemove(self: *PieceList, from: IndexInt, to: IndexInt) void {

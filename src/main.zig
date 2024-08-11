@@ -26,4 +26,5 @@ pub fn main() !void {
 
     const piece_list = zaplum.chess.PieceList.starting;
     std.debug.print("{s}\n", .{piece_list});
+    piece_list.assertValid();
 }
