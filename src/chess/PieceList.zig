@@ -31,7 +31,7 @@ pub const starting = initStarting();
 const indicies_len = Piece.count;
 const lens_len = Piece.hard_count;
 
-pub fn assertValid(self: PieceList) void {
+pub fn assertValid(self: *const PieceList) void {
     if (builtin.mode != .Debug) return;
     var seen: [chess.board_size]bool = undefined;
     var total: usize = 0;
@@ -46,7 +46,7 @@ pub fn assertValid(self: PieceList) void {
     assert(total == self.total);
 }
 
-pub fn slice(self: PieceList, piece: Piece) []const Square {
+pub fn slice(self: *const PieceList, piece: Piece) []const Square {
     assert(piece != .none);
     const pce = piece.toU4();
     const start = self.indicies[pce];
@@ -54,12 +54,12 @@ pub fn slice(self: PieceList, piece: Piece) []const Square {
     return self.data[start..end];
 }
 
-pub fn count(self: PieceList, piece: Piece) IndexInt {
+pub fn count(self: *const PieceList, piece: Piece) IndexInt {
     assert(piece != .none);
     return self.lens[piece.toU4()];
 }
 
-pub fn get(self: PieceList, piece: Piece, index: IndexInt) Square {
+pub fn get(self: *const PieceList, piece: Piece, index: IndexInt) Square {
     const i = self.indicies[piece.toU4()] + index;
     assert(i < capacity);
     return self.data[i];
@@ -114,6 +114,13 @@ pub fn promote(self: *PieceList, piece: Piece, index: IndexInt, square: Square, 
     caps.promote(piece, new);
     self.indicies = caps.toIndicies();
     self.append(new, square);
+}
+
+pub fn format(self: PieceList, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+    for (Piece.hard_values) |piece| {
+        const sli = self.slice(piece);
+        try writer.print("{}: {s}\n", .{ piece, sli });
+    }
 }
 
 fn appendMultiple(self: *PieceList, piece: Piece, squares: []const Square) void {

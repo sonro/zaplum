@@ -21,4 +21,9 @@ pub fn main() !void {
 
     const placement = zaplum.chess.Placement.starting;
     std.debug.print("{s}\n", .{placement});
+
+    // print piece list
+
+    const piece_list = zaplum.chess.PieceList.starting;
+    std.debug.print("{s}\n", .{piece_list});
 }
