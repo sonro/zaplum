@@ -16,18 +16,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - 2024-08-12
 
-### Added
+### Chess module
 
-#### Chess module
+#### Added
 
 - `Piece` max allowed of each piece.
 
-### Fixed
+#### Fixed
 
 - `PieceList` copy by reference.
 - `PieceList.assertValid` method using `false` instead of `undefined`.
 
-### Changed
+#### Changed
 
 - **BREAKING** `Piece.max` now `.max_board` for clarity.
 
