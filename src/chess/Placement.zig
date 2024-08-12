@@ -27,7 +27,7 @@ pub const starting = Placement{ .squares = [board_size]Piece{
     .black_rook, .black_knight, .black_bishop, .black_queen, .black_king, .black_bishop, .black_knight, .black_rook,
 } };
 
-pub fn get(self: Placement, square: Square) Piece {
+pub fn get(self: *const Placement, square: Square) Piece {
     assert(square != .none);
     return self.squares[square.toIndex()];
 }
@@ -37,7 +37,7 @@ pub fn set(self: *Placement, square: Square, piece: Piece) void {
     self.squares[square.toIndex()] = piece;
 }
 
-pub fn format(self: Placement, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+pub fn format(self: *const Placement, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
     return implFormat(Placement, self, writer);
 }
 
@@ -50,7 +50,7 @@ pub const Packed = struct {
 
     pub const Array = std.PackedIntArray(u4, board_size);
 
-    pub fn get(self: Packed, square: Square) Piece {
+    pub fn get(self: *const Packed, square: Square) Piece {
         assert(square != .none);
         return Piece.fromU4(self.squares.get(square.toIndex()));
     }
@@ -68,12 +68,12 @@ pub const Packed = struct {
         return self;
     }
 
-    pub fn format(self: Packed, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+    pub fn format(self: *const Packed, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
         return implFormat(Packed, self, writer);
     }
 };
 
-fn implFormat(comptime Self: type, self: Self, writer: anytype) !void {
+fn implFormat(comptime Self: type, self: *const Self, writer: anytype) !void {
     var rank: usize = 8;
     while (rank > 0) {
         rank -= 1;
