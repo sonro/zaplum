@@ -8,6 +8,7 @@ pub const std_options = .{
 pub const zaplum_options = zaplum.Options{
     .bit_board_impl = .lookup,
     .piece_impl = .lookup,
+    .piece_map_impl = .lookup,
 };
 
 pub fn main() !void {
@@ -27,4 +28,11 @@ pub fn main() !void {
     const piece_list = zaplum.chess.PieceList.starting;
     std.debug.print("{s}\n", .{piece_list});
     piece_list.assertValid();
+
+    // print piece map
+
+    const piece_map = zaplum.chess.PieceMap.starting;
+    std.debug.print("{s}\n", .{piece_map});
+    std.debug.print("piece map size: {}\n", .{@sizeOf(zaplum.chess.PieceMap)});
+    piece_map.assertValid();
 }
