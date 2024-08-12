@@ -127,19 +127,9 @@ fn appendIndexMaxToRange(lut: *IndexMap, piece: Piece, start: IndexInt, end: Ind
 
 fn initStarting() Self {
     var pm = empty;
-    pm.setMultiple(.white_pawn, &.{ .a2, .b2, .c2, .d2, .e2, .f2, .g2, .h2 });
-    pm.setMultiple(.white_knight, &.{ .b1, .g1 });
-    pm.setMultiple(.white_bishop, &.{ .c1, .f1 });
-    pm.setMultiple(.white_rook, &.{ .a1, .h1 });
-    pm.setMultiple(.white_queen, &.{.d1});
-    pm.setMultiple(.white_king, &.{.e1});
-    pm.setMultiple(.black_pawn, &.{ .a7, .b7, .c7, .d7, .e7, .f7, .g7, .h7 });
-    pm.setMultiple(.black_knight, &.{ .b8, .g8 });
-    pm.setMultiple(.black_bishop, &.{ .c8, .f8 });
-    pm.setMultiple(.black_rook, &.{ .a8, .h8 });
-    pm.setMultiple(.black_queen, &.{.d8});
-    pm.setMultiple(.black_king, &.{.e8});
-
+    for (chess.starting.piece_squares, 0..) |squares, pce| {
+        pm.setMultiple(@enumFromInt(pce), squares);
+    }
     return pm;
 }
 

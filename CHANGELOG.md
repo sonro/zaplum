@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Chess module
 
 - `PieceMap` board representation.
+- `starting` sub module for useful starting positions representations.
 
 
 ## [0.2.0] - 2024-08-12

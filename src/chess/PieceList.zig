@@ -218,20 +218,9 @@ const PieceCaps = struct {
 
 fn initStarting() PieceList {
     var self = empty;
-    self.appendMultiple(Piece.white_pawn, &.{ .a2, .b2, .c2, .d2, .e2, .f2, .g2, .h2 });
-    self.appendMultiple(Piece.white_rook, &.{ .a1, .h1 });
-    self.appendMultiple(Piece.white_knight, &.{ .b1, .g1 });
-    self.appendMultiple(Piece.white_bishop, &.{ .c1, .f1 });
-    self.appendMultiple(Piece.white_queen, &.{.d1});
-    self.appendMultiple(Piece.white_king, &.{.e1});
-
-    self.appendMultiple(Piece.black_pawn, &.{ .a7, .b7, .c7, .d7, .e7, .f7, .g7, .h7 });
-    self.appendMultiple(Piece.black_rook, &.{ .a8, .h8 });
-    self.appendMultiple(Piece.black_knight, &.{ .b8, .g8 });
-    self.appendMultiple(Piece.black_bishop, &.{ .c8, .f8 });
-    self.appendMultiple(Piece.black_queen, &.{.d8});
-    self.appendMultiple(Piece.black_king, &.{.e8});
-
+    for (chess.starting.piece_squares, 0..) |squares, pce| {
+        self.appendMultiple(Piece.fromU4(pce), squares);
+    }
     return self;
 }
 
@@ -263,18 +252,9 @@ test "empty" {
 }
 
 test "starting" {
-    try testPiece(starting, .white_pawn, &.{ .a2, .b2, .c2, .d2, .e2, .f2, .g2, .h2 });
-    try testPiece(starting, .black_pawn, &.{ .a7, .b7, .c7, .d7, .e7, .f7, .g7, .h7 });
-    try testPiece(starting, .white_knight, &.{ .b1, .g1 });
-    try testPiece(starting, .black_knight, &.{ .b8, .g8 });
-    try testPiece(starting, .white_bishop, &.{ .c1, .f1 });
-    try testPiece(starting, .black_bishop, &.{ .c8, .f8 });
-    try testPiece(starting, .white_rook, &.{ .a1, .h1 });
-    try testPiece(starting, .black_rook, &.{ .a8, .h8 });
-    try testPiece(starting, .white_queen, &.{.d1});
-    try testPiece(starting, .black_queen, &.{.d8});
-    try testPiece(starting, .white_king, &.{.e1});
-    try testPiece(starting, .black_king, &.{.e8});
+    for (chess.starting.piece_squares, 0..) |squares, pce| {
+        try testPiece(starting, @enumFromInt(pce), squares);
+    }
 }
 
 test "append" {

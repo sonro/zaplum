@@ -15,4 +15,5 @@ comptime {
     _ = @import("chess/piece_map/DirectImpl.zig");
     _ = @import("chess/Placement.zig");
     _ = @import("chess/square.zig");
+    _ = @import("chess/starting.zig");
 }

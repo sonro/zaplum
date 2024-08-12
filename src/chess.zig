@@ -12,6 +12,7 @@ pub const Rank = square.Rank;
 pub const RankFile = square.RankFile;
 pub const Side = color.Side;
 pub const Square = square.Square;
+pub const starting = @import("chess/starting.zig");
 
 /// The integer type used to index a board
 pub const IndexInt = u8;

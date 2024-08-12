@@ -80,21 +80,24 @@ const ExpArray = [Piece.hard_count][]const Square;
 fn initExpStart() ExpArray {
     var exp: ExpArray = undefined;
 
-    exp[Piece.white_pawn.toU4()] = &[8]Square{ .a2, .b2, .c2, .d2, .e2, .f2, .g2, .h2 };
-    exp[Piece.white_knight.toU4()] = &[2]Square{ .b1, .g1 } ++ NoneSquare(8);
-    exp[Piece.white_bishop.toU4()] = &[2]Square{ .c1, .f1 } ++ NoneSquare(8);
-    exp[Piece.white_rook.toU4()] = &[2]Square{ .a1, .h1 } ++ NoneSquare(8);
-    exp[Piece.white_queen.toU4()] = &[1]Square{.d1} ++ NoneSquare(8);
-    exp[Piece.white_king.toU4()] = &[1]Square{.e1};
-
-    exp[Piece.black_pawn.toU4()] = &[8]Square{ .a7, .b7, .c7, .d7, .e7, .f7, .g7, .h7 };
-    exp[Piece.black_knight.toU4()] = &[2]Square{ .b8, .g8 } ++ NoneSquare(8);
-    exp[Piece.black_bishop.toU4()] = &[2]Square{ .c8, .f8 } ++ NoneSquare(8);
-    exp[Piece.black_rook.toU4()] = &[2]Square{ .a8, .h8 } ++ NoneSquare(8);
-    exp[Piece.black_queen.toU4()] = &[1]Square{.d8} ++ NoneSquare(8);
-    exp[Piece.black_king.toU4()] = &[1]Square{.e8};
+    for (chess.starting.piece_squares, 0..) |squares, pce| {
+        switch (Piece.fromU4(pce).kind()) {
+            .pawn,
+            .king,
+            => appendToExpArrayNoNone(&exp, pce),
+            else => appendToExpArray(&exp, pce, squares, 8),
+        }
+    }
 
     return exp;
+}
+
+fn appendToExpArray(exp: *ExpArray, pce: u4, squares: []const Square, none: usize) void {
+    exp[pce] = squares ++ NoneSquare(none);
+}
+
+fn appendToExpArrayNoNone(exp: *ExpArray, pce: u4) void {
+    appendToExpArray(exp, pce, chess.starting.piece_squares[pce], 0);
 }
 
 fn NoneSquare(comptime N: usize) [N]Square {
