@@ -217,6 +217,22 @@ pub fn TestImpl(comptime Impl: type) type {
             try testFromColorKind(.black_king, .black, .king);
         }
 
+        test "max allowed" {
+            try testMaxAllowed(Piece.max_pawns, .white_pawn);
+            try testMaxAllowed(Piece.max_knights, .white_knight);
+            try testMaxAllowed(Piece.max_bishops, .white_bishop);
+            try testMaxAllowed(Piece.max_rooks, .white_rook);
+            try testMaxAllowed(Piece.max_queens, .white_queen);
+            try testMaxAllowed(Piece.max_kings, .white_king);
+            try testMaxAllowed(Piece.max_pawns, .black_pawn);
+            try testMaxAllowed(Piece.max_knights, .black_knight);
+            try testMaxAllowed(Piece.max_bishops, .black_bishop);
+            try testMaxAllowed(Piece.max_rooks, .black_rook);
+            try testMaxAllowed(Piece.max_queens, .black_queen);
+            try testMaxAllowed(Piece.max_kings, .black_king);
+            try testMaxAllowed(0, .none);
+        }
+
         fn testKind(expected: Piece.Kind, piece: Piece) !void {
             try testing.expectEqual(expected, Impl.kind(piece));
         }
@@ -279,6 +295,10 @@ pub fn TestImpl(comptime Impl: type) type {
 
         fn testFromColorKind(expected: Piece, color: Color, kind: Piece.Kind) !void {
             try testing.expectEqual(expected, Impl.fromColorKind(color, kind));
+        }
+
+        fn testMaxAllowed(expected: u8, piece: Piece) !void {
+            try testing.expectEqual(expected, Impl.maxAllowed(piece));
         }
     };
 }

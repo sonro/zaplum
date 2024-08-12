@@ -32,7 +32,15 @@ pub const Piece = enum(u4) {
     /// Maximum number of playing pieces on a board
     pub const max = 32;
     /// Maximum number of single pieces
-    pub const single_max = 10;
+    pub const max_pawns = 8;
+    pub const max_knights = 10;
+    pub const max_bishops = 10;
+    pub const max_rooks = 10;
+    pub const max_queens = 9;
+    pub const max_kings = 1;
+    pub const max_single = std.mem.max(comptime_int, &.{
+        max_pawns, max_knights, max_bishops, max_rooks, max_queens, max_kings,
+    });
 
     /// Array of all pieces including none
     pub const values = initValues(count);
@@ -64,6 +72,11 @@ pub const Piece = enum(u4) {
 
     pub fn toU4(self: Piece) u4 {
         return @intFromEnum(self);
+    }
+
+    /// Maximum number of _this_ `Piece` allowed on the board
+    pub fn maxAllowed(self: Piece) u8 {
+        return impl.maxAllowed(self);
     }
 
     pub fn side(self: Piece) Side {
@@ -336,6 +349,31 @@ test "piece char" {
     try testing.expectEqual('r', Piece.black_rook.char());
     try testing.expectEqual('q', Piece.black_queen.char());
     try testing.expectEqual('k', Piece.black_king.char());
+}
+
+test "piece max pawns" {
+    try testing.expectEqual(8, Piece.white_pawn.maxAllowed());
+    try testing.expectEqual(8, Piece.black_pawn.maxAllowed());
+}
+
+test "piece max minors" {
+    try testing.expectEqual(10, Piece.white_knight.maxAllowed());
+    try testing.expectEqual(10, Piece.black_knight.maxAllowed());
+
+    try testing.expectEqual(10, Piece.white_bishop.maxAllowed());
+    try testing.expectEqual(10, Piece.black_bishop.maxAllowed());
+}
+
+test "piece max majors" {
+    try testing.expectEqual(10, Piece.white_rook.maxAllowed());
+    try testing.expectEqual(10, Piece.black_rook.maxAllowed());
+    try testing.expectEqual(9, Piece.white_queen.maxAllowed());
+    try testing.expectEqual(9, Piece.black_queen.maxAllowed());
+}
+
+test "piece max kings" {
+    try testing.expectEqual(1, Piece.white_king.maxAllowed());
+    try testing.expectEqual(1, Piece.black_king.maxAllowed());
 }
 
 test "kind values" {

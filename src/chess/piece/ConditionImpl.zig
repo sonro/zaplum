@@ -152,6 +152,18 @@ pub fn char(self: Piece) u8 {
     };
 }
 
+pub fn maxAllowed(self: Piece) u8 {
+    return switch (self.kind()) {
+        .pawn => Piece.max_pawns,
+        .knight => Piece.max_knights,
+        .bishop => Piece.max_bishops,
+        .rook => Piece.max_rooks,
+        .queen => Piece.max_queens,
+        .king => Piece.max_kings,
+        .none => 0,
+    };
+}
+
 comptime {
     const tests = @import("tests.zig");
     _ = tests.TestImpl(@This());

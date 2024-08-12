@@ -37,6 +37,7 @@ const slider_lut = Lut(bool, ConditionImpl.isSlider);
 const diagonal_slider_lut = Lut(bool, ConditionImpl.isDiagonalSlider);
 const orthogonal_slider_lut = Lut(bool, ConditionImpl.isOrthogonalSlider);
 const char_lut = Lut(u8, ConditionImpl.char);
+const max_allowed_lut = Lut(u8, ConditionImpl.maxAllowed);
 
 const ConditionImpl = @import("ConditionImpl.zig");
 
@@ -82,6 +83,10 @@ pub fn isOrthogonalSlider(self: Piece) bool {
 
 pub fn char(self: Piece) u8 {
     return char_lut[self.toU4()];
+}
+
+pub fn maxAllowed(self: Piece) u8 {
+    return max_allowed_lut[self.toU4()];
 }
 
 fn Lut(comptime T: type, comptime function: fn (Piece) T) [Piece.count]T {
