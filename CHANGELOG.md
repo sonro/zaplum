@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Chess module
+
+#### Changed
+
+- **BREAKING** `BitBoard` methods now use `Square` instead of `IndexInt`.
+
 ## [0.2.1] - 2024-08-13
 
 ### Added

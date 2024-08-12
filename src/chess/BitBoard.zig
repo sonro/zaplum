@@ -13,6 +13,7 @@ const chess = @import("../chess.zig");
 const Range = chess.Range;
 const size = chess.board_size;
 const IndexInt = chess.IndexInt;
+const Square = chess.Square;
 
 const MathImpl = @import("bit_board/MathImpl.zig");
 const LookupImpl = @import("bit_board/LookupImpl.zig");
@@ -52,10 +53,10 @@ pub fn from(mask: MaskInt) BitBoard {
     return .{ .mask = mask };
 }
 
-/// Returns true if the square at this index is set.
-pub fn isSet(self: BitBoard, index: IndexInt) bool {
-    assert(index < size);
-    return (self.mask & impl.maskBit(index)) != 0;
+/// Returns true if this square is set
+pub fn isSet(self: BitBoard, square: Square) bool {
+    assert(square != .none);
+    return (self.mask & impl.maskBit(square.toIndex())) != 0;
 }
 
 /// Returns the total number of set squares on this board
@@ -63,16 +64,16 @@ pub fn count(self: BitBoard) IndexInt {
     return @popCount(self.mask);
 }
 
-/// Changes the value of the specified square to match the passed boolean.
-pub fn setValue(self: *BitBoard, index: IndexInt, value: bool) void {
-    assert(index < size);
-    impl.setValue(&self.mask, index, value);
+/// Changes the value of the square to match the passed boolean.
+pub fn setValue(self: *BitBoard, square: Square, value: bool) void {
+    assert(square != .none);
+    impl.setValue(&self.mask, square.toIndex(), value);
 }
 
 /// Sets the specified square
-pub fn set(self: *BitBoard, index: IndexInt) void {
-    assert(index < size);
-    impl.set(&self.mask, index);
+pub fn set(self: *BitBoard, square: Square) void {
+    assert(square != .none);
+    impl.set(&self.mask, square.toIndex());
 }
 
 /// Changes the value of all squares in the specified range to
@@ -85,9 +86,9 @@ pub fn setRangeValue(self: *BitBoard, range: Range, value: bool) void {
 }
 
 /// Unsets a specific square on this board
-pub fn unset(self: *BitBoard, index: IndexInt) void {
-    assert(index < size);
-    impl.unset(&self.mask, index);
+pub fn unset(self: *BitBoard, square: Square) void {
+    assert(square != .none);
+    impl.unset(&self.mask, square.toIndex());
 }
 
 /// Sets all squares in the specified range
@@ -107,9 +108,9 @@ pub fn unsetRange(self: *BitBoard, range: Range) void {
 }
 
 /// Flips a specific square on this board
-pub fn toggle(self: *BitBoard, index: IndexInt) void {
-    assert(index < size);
-    impl.toggle(&self.mask, index);
+pub fn toggle(self: *BitBoard, square: Square) void {
+    assert(square != .none);
+    impl.toggle(&self.mask, square.toIndex());
 }
 
 /// Flips all squares on this board which are present in the toggles board
@@ -136,22 +137,22 @@ pub fn setIntersection(self: *BitBoard, other: BitBoard) void {
     self.mask &= other.mask;
 }
 
-/// Finds the index of the first set square.
-/// If no squares are set, returns null.
-pub fn findFirstSet(self: BitBoard) ?IndexInt {
+/// Finds the first set square
+/// If no squares are set, returns `.none`
+pub fn findFirstSet(self: BitBoard) Square {
     const mask = self.mask;
-    if (mask == 0) return null;
-    return @ctz(mask);
+    if (mask == 0) return .none;
+    return Square.fromIndex(@ctz(mask));
 }
 
-/// Finds the index of the first set square, and unsets it.
-/// If no squares are set, returns null.
-pub fn popBit(self: *BitBoard) ?IndexInt {
+/// Finds the first set square, and unsets it.
+/// If no squares are set, returns `.none`.
+pub fn popBit(self: *BitBoard) Square {
     const mask = self.mask;
-    if (mask == 0) return null;
+    if (mask == 0) return .none;
     const index = @ctz(mask);
     self.mask = mask & (mask - 1);
-    return index;
+    return Square.fromIndex(index);
 }
 
 /// Returns true if every corresponding square in both
@@ -224,7 +225,7 @@ pub fn format(self: BitBoard, _: []const u8, _: std.fmt.FormatOptions, writer: a
         rank -= 1;
         file = 0;
         while (file < 8) : (file += 1) {
-            if (self.isSet(rank * 8 + file)) {
+            if (self.isSet(Square.fromIndex(rank * 8 + file))) {
                 try writer.writeAll(" X");
             } else {
                 try writer.writeAll(" -");
@@ -290,7 +291,6 @@ test "empty" {
     try testing.expectEqual(expected, empty);
     try testing.expectEqual(expected.mask, empty.mask);
 }
-
 test "full" {
     const expected = BitBoard{ .mask = std.math.maxInt(MaskInt) };
     try testing.expectEqual(expected, full);
@@ -304,10 +304,10 @@ test "from" {
 
 test "is set" {
     const board = from(0b1001);
-    try testing.expect(board.isSet(0));
-    try testing.expect(!board.isSet(1));
-    try testing.expect(!board.isSet(2));
-    try testing.expect(board.isSet(3));
+    try testing.expect(board.isSet(sqi(0)));
+    try testing.expect(!board.isSet(sqi(1)));
+    try testing.expect(!board.isSet(sqi(2)));
+    try testing.expect(board.isSet(sqi(3)));
 }
 
 test "pop count empty" {
@@ -325,45 +325,45 @@ test "pop count custom" {
 
 test "set value is set true" {
     var board = empty;
-    board.setValue(0, true);
-    try testing.expect(board.isSet(0));
+    board.setValue(sqi(0), true);
+    try testing.expect(board.isSet(sqi(0)));
 }
 
 test "set value is set false" {
     var board = full;
-    board.setValue(4, false);
-    try testing.expect(!board.isSet(4));
+    board.setValue(sqi(4), false);
+    try testing.expect(!board.isSet(sqi(4)));
 }
 
 test "set is set empty" {
     var board = empty;
-    board.set(12);
-    try testing.expect(board.isSet(12));
+    board.set(sqi(12));
+    try testing.expect(board.isSet(sqi(12)));
 }
 
 test "set is set full" {
     var board = full;
-    board.set(14);
-    try testing.expect(board.isSet(14));
+    board.set(sqi(14));
+    try testing.expect(board.isSet(sqi(14)));
 }
 
 test "unset is not set full" {
     var board = full;
-    board.unset(16);
-    try testing.expect(!board.isSet(16));
+    board.unset(sqi(16));
+    try testing.expect(!board.isSet(sqi(16)));
 }
 
 test "unset is not set empty" {
     var board = empty;
-    board.unset(17);
-    try testing.expect(!board.isSet(17));
+    board.unset(sqi(17));
+    try testing.expect(!board.isSet(sqi(17)));
 }
 
 test "set range value are set true" {
     var board = empty;
     board.setRangeValue(.{ .start = 0, .end = 3 }, true);
     for (0..3) |i| {
-        try testing.expect(board.isSet(@intCast(i)));
+        try testing.expect(board.isSet(sqi(i)));
     }
 }
 
@@ -371,7 +371,7 @@ test "set range value are set false" {
     var board = full;
     board.setRangeValue(.{ .start = 0, .end = 3 }, false);
     for (0..3) |i| {
-        try testing.expect(!board.isSet(@intCast(i)));
+        try testing.expect(!board.isSet(sqi(i)));
     }
 }
 
@@ -397,7 +397,7 @@ test "unset range empty" {
     var board = empty;
     board.unsetRange(.{ .start = 0, .end = 3 });
     for (0..3) |i| {
-        try testing.expect(!board.isSet(@intCast(i)));
+        try testing.expect(!board.isSet(sqi(i)));
     }
 }
 
@@ -405,7 +405,7 @@ test "unset range full" {
     var board = full;
     board.unsetRange(.{ .start = 0, .end = 3 });
     for (0..3) |i| {
-        try testing.expect(!board.isSet(@intCast(i)));
+        try testing.expect(!board.isSet(sqi(i)));
     }
 }
 
@@ -423,14 +423,14 @@ test "unset range custom" {
 
 test "toggle once" {
     var board = from(0b1010);
-    board.toggle(0);
+    board.toggle(sqi(0));
     try testing.expectEqual(from(0b1011), board);
 }
 
 test "toggle twice" {
     var board = from(0b1010);
-    board.toggle(0);
-    board.toggle(0);
+    board.toggle(sqi(0));
+    board.toggle(sqi(0));
     try testing.expectEqual(from(0b1010), board);
 }
 
@@ -546,35 +546,35 @@ test "set intersection custom with custom" {
 
 test "find first set empty" {
     var board = empty;
-    try testing.expectEqual(null, board.findFirstSet());
+    try testing.expectEqual(.none, board.findFirstSet());
 }
 
 test "find first set full" {
     var board = full;
-    try testing.expectEqual(0, board.findFirstSet());
+    try testing.expectEqual(.a1, board.findFirstSet());
 }
 
 test "find first set custom" {
     var board = from(0b1010);
-    try testing.expectEqual(1, board.findFirstSet());
+    try testing.expectEqual(sqi(1), board.findFirstSet());
 }
 
 test "pop bit empty" {
     var board = empty;
-    try testing.expectEqual(null, board.popBit());
+    try testing.expectEqual(.none, board.popBit());
 }
 
 test "pop bit full" {
     var board = full;
-    try testing.expectEqual(0, board.popBit());
-    try testing.expectEqual(1, board.popBit());
+    try testing.expectEqual(sqi(0), board.popBit());
+    try testing.expectEqual(sqi(1), board.popBit());
 }
 
 test "pop bit custom" {
     var board = from(0b1010);
-    try testing.expectEqual(1, board.popBit());
-    try testing.expectEqual(3, board.popBit());
-    try testing.expectEqual(null, board.popBit());
+    try testing.expectEqual(sqi(1), board.popBit());
+    try testing.expectEqual(sqi(3), board.popBit());
+    try testing.expectEqual(.none, board.popBit());
 }
 
 test "eql" {
@@ -779,4 +779,8 @@ test "iterate custom unset" {
     try testing.expectEqual(2, iter.next());
     try testing.expectEqual(4, iter.next());
     try testing.expectEqual(5, iter.next());
+}
+
+fn sqi(index: usize) Square {
+    return @enumFromInt(index);
 }
