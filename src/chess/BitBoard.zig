@@ -64,6 +64,10 @@ pub fn count(self: BitBoard) IndexInt {
     return @popCount(self.mask);
 }
 
+pub fn isEmpty(self: BitBoard) bool {
+    return self.mask == 0;
+}
+
 /// Changes the value of the square to match the passed boolean.
 pub fn setValue(self: *BitBoard, square: Square, value: bool) void {
     assert(square != .none);
@@ -291,10 +295,23 @@ test "empty" {
     try testing.expectEqual(expected, empty);
     try testing.expectEqual(expected.mask, empty.mask);
 }
+
 test "full" {
     const expected = BitBoard{ .mask = std.math.maxInt(MaskInt) };
     try testing.expectEqual(expected, full);
     try testing.expectEqual(expected.mask, full.mask);
+}
+
+test "empty is empty" {
+    try testing.expect(empty.isEmpty());
+}
+
+test "full is not empty" {
+    try testing.expect(!full.isEmpty());
+}
+
+test "single val is not empty" {
+    try testing.expect(!from(0b0010).isEmpty());
 }
 
 test "from" {

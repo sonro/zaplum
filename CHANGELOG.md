@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Chess module
 
+#### Added
+
+- `BitBoard` `isEmpty` method.
+
 #### Changed
 
 - **BREAKING** `BitBoard` methods now use `Square` instead of `IndexInt`.
