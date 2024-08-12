@@ -1,4 +1,4 @@
-//! Array cacked list of active pieces
+//! Array of active pieces
 //!
 //! Supports removal and promotion, although doing so will invalidate
 //! existing indicies and therefore iterators.
