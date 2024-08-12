@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `PieceList` copy by reference.
+- `PieceList.assertValid` method using `false` instead of `undefined`.
 
 ### Changed
 

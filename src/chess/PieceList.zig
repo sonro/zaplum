@@ -44,7 +44,7 @@ const lens_len = Piece.hard_count;
 /// and the total number of pieces is correct.
 pub fn assertValid(self: *const PieceList) void {
     if (builtin.mode != .Debug) return;
-    var seen: [chess.board_size]bool = undefined;
+    var seen: [chess.board_size]bool = .{false} ** chess.board_size;
     var total: usize = 0;
     for (Piece.hard_values) |piece| {
         const sli = self.slice(piece);
