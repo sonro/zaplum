@@ -1,4 +1,8 @@
-//! Array of active pieces
+//! List of `Square`s occupied by `Piece`s
+//!
+//! Includes individual and total counts.
+//!
+//! Uses fewer than 64 bytes of memory.
 //!
 //! Supports removal and promotion, although doing so will invalidate
 //! existing indicies and therefore iterators.

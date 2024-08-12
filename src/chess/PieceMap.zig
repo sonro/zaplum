@@ -1,3 +1,8 @@
+//! Map from `Piece` to `Square`.
+//!
+//! Stores up to the maximum number of each `Piece` allowed on the board.
+//!
+//! Indicies are not invalidated on update.
 const PieceMap = @This();
 
 const std = @import("std");

@@ -1,4 +1,6 @@
 //! Arrangement of pieces on a chess board
+//!
+//! Does not store any other data about the position
 const Placement = @This();
 
 const std = @import("std");
@@ -39,6 +41,7 @@ pub fn format(self: Placement, comptime _: []const u8, _: std.fmt.FormatOptions,
     return implFormat(Placement, self, writer);
 }
 
+/// A bit packed `Placement` with the same API
 pub const Packed = struct {
     squares: Array,
 
