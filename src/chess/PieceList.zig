@@ -26,7 +26,7 @@ lens: Lens,
 total: IndexInt,
 
 /// Size of the backing array
-pub const capacity: IndexInt = Piece.max;
+pub const capacity: IndexInt = Piece.max_board;
 
 pub const empty = PieceList{
     .data = [_]Square{.none} ** capacity,

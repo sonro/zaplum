@@ -30,7 +30,7 @@ pub const Piece = enum(u4) {
     /// Excludes `none`
     pub const hard_count = count - 1;
     /// Maximum number of playing pieces on a board
-    pub const max = 32;
+    pub const max_board = 32;
     /// Maximum number of single pieces
     pub const max_pawns = 8;
     pub const max_knights = 10;
@@ -197,7 +197,7 @@ test "piece hard count excludes none" {
 }
 
 test "max pieces should be 32" {
-    try testing.expectEqual(32, Piece.max);
+    try testing.expectEqual(32, Piece.max_board);
 }
 
 test "Piece from u4" {
