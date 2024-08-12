@@ -46,6 +46,10 @@ pub const Piece = enum(u4) {
     pub const values = initValues(count);
     /// Array of all pieces excluding none
     pub const hard_values = initValues(hard_count);
+    /// Array of pieces by `Color`
+    pub const color_values = initColorValues();
+    /// Slice of pieces by `Side`
+    pub const side_values = initSideValues();
 
     /// Implementation for piece information
     pub const Impl = enum {
@@ -185,6 +189,24 @@ fn initKindValues(comptime count: u3) [count]Piece.Kind {
     for (0..count) |i| {
         result[i] = @enumFromInt(i);
     }
+    return result;
+}
+
+fn initColorValues() [2][Piece.Kind.hard_count]Piece {
+    var result: [2][Piece.Kind.hard_count]Piece = undefined;
+    for (0..2) |i| {
+        for (0..Piece.Kind.hard_count) |j| {
+            result[i][j] = Piece.fromColorKind(@enumFromInt(i), @enumFromInt(j));
+        }
+    }
+    return result;
+}
+
+fn initSideValues() [4][]const Piece {
+    var result: [4][]const Piece = undefined;
+    for (0..2) |i| result[i] = &Piece.color_values[i];
+    result[2] = &Piece.hard_values;
+    result[3] = &.{};
     return result;
 }
 
@@ -374,6 +396,38 @@ test "piece max majors" {
 test "piece max kings" {
     try testing.expectEqual(1, Piece.white_king.maxAllowed());
     try testing.expectEqual(1, Piece.black_king.maxAllowed());
+}
+
+test "piece color values" {
+    for (Piece.color_values, 0..) |color, col| {
+        for (color, 0..) |piece, i| {
+            const expected = Piece.fromColorKind(@enumFromInt(col), @enumFromInt(i));
+            try testing.expectEqual(expected, piece);
+        }
+    }
+}
+
+test "piece side values" {
+    for (Piece.side_values, 0..) |pieces, i| {
+        const side: Side = @enumFromInt(i);
+        switch (side) {
+            .none => try testing.expectEqualSlices(Piece, &.{}, pieces),
+            .white => try testing.expectEqualSlices(
+                Piece,
+                &.{ .white_pawn, .white_knight, .white_bishop, .white_rook, .white_queen, .white_king },
+                pieces,
+            ),
+            .black => try testing.expectEqualSlices(
+                Piece,
+                &.{ .black_pawn, .black_knight, .black_bishop, .black_rook, .black_queen, .black_king },
+                pieces,
+            ),
+            .both => try testing.expectEqualSlices(Piece, &.{
+                .white_pawn, .white_knight, .white_bishop, .white_rook, .white_queen, .white_king,
+                .black_pawn, .black_knight, .black_bishop, .black_rook, .black_queen, .black_king,
+            }, pieces),
+        }
+    }
 }
 
 test "kind values" {

@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `PieceMap` board representation.
 - `starting` sub module for useful starting positions representations.
-
+- `Piece` color and side value arrays.
 
 ## [0.2.0] - 2024-08-12
 
