@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### Chess module
+
+- `CastleState` and `CastleStatePacked` `none` and `all` constants.
+- `PosHash` position hashing.
+
 ## [0.3.1] - 2024-08-13
 
 ### Added
