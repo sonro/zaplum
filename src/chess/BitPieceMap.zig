@@ -23,7 +23,7 @@ pub const starting: BitPieceMap = initStarting();
 
 pub const BitMap = [capacity]BitBoard;
 
-const capacity = Piece.hard_count;
+pub const capacity = Piece.hard_count;
 const starting_bit_masks: MaskIntMap = initStartingBitMasks();
 
 const MaskIntMap = [capacity]MaskInt;
