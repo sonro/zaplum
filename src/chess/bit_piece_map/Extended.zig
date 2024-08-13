@@ -133,6 +133,15 @@ test "starting extras" {
     try testExtras(Extended.starting);
 }
 
+test "get mut with update" {
+    var ext = Extended.empty;
+    var board = ext.getMut(.white_pawn);
+    board.set(Square.e4);
+    try testing.expect(!ext.getKind(.pawn).isSet(Square.e4));
+    ext.updateExtra(.white_pawn);
+    try testing.expect(ext.getKind(.pawn).isSet(Square.e4));
+}
+
 fn testExtras(ext: Extended) !void {
     const expected = ext.map.extra();
     const actual = ext.extra;
