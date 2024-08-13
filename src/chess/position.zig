@@ -16,6 +16,11 @@ pub const Position = PositionConfig(.{
     .CastleRights = chess.CastleState,
 });
 
+/// Bit packed version of `Position`.
+///
+/// Minimum information required to describe a position
+///
+/// Uses mailbox placement
 pub const PositionPacked = PositionConfig(.{
     .Placement = chess.Placement.Packed,
     .CastleRights = chess.CastleStatePacked,
