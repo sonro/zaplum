@@ -9,8 +9,8 @@ pub const State = struct {
     black_king: bool = false,
     black_queen: bool = false,
 
-    const none = None(State);
-    const all = All(State);
+    pub const none = None(State);
+    pub const all = All(State);
 
     pub fn fromU4(state: u4) State {
         return StatePacked.fromU4(state).toState();
@@ -46,8 +46,8 @@ pub const StatePacked = packed struct(u4) {
     black_king: bool = false,
     black_queen: bool = false,
 
-    const none = None(StatePacked);
-    const all = All(StatePacked);
+    pub const none = None(StatePacked);
+    pub const all = All(StatePacked);
 
     pub fn fromU4(state: u4) StatePacked {
         return @bitCast(state);
