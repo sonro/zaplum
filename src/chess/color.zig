@@ -8,6 +8,8 @@ pub const Color = enum(u1) {
     white = 0,
     black = 1,
 
+    const chars = "wb";
+
     pub fn toU1(self: Color) u1 {
         return @intFromEnum(self);
     }
@@ -25,6 +27,10 @@ pub const Color = enum(u1) {
 
     pub fn opposite(self: Color) Color {
         return @enumFromInt(self.toU1() ^ 1);
+    }
+
+    pub fn char(self: Color) u8 {
+        return chars[@intFromEnum(self)];
     }
 
     pub fn format(self: Color, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
