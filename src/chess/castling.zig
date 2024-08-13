@@ -3,6 +3,10 @@ const testing = std.testing;
 
 const str_lut: [16][]const u8 = initStrLut();
 
+/// Useful to represent castling permissions/rights
+/// or wheter a side has castled.
+///
+/// Use `StatePacked` for a 4 bit version.
 pub const State = struct {
     white_king: bool = false,
     white_queen: bool = false,
@@ -40,6 +44,10 @@ pub const State = struct {
     }
 };
 
+/// Useful to represent castling permissions/rights
+/// or wheter a side has castled.
+///
+/// Use `State` for a non bit-packed version.
 pub const StatePacked = packed struct(u4) {
     white_king: bool = false,
     white_queen: bool = false,
