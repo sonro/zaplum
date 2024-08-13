@@ -45,6 +45,19 @@ pub fn setSquare(self: *BitPieceMap, piece: Piece, square: Square) void {
     self.map[piece.toU4()].set(square);
 }
 
+/// Sets an individual `Square` for a given `Piece` to `value`
+/// Does not remove any existing `Square`
+pub fn setSquareValue(self: *BitPieceMap, piece: Piece, square: Square, value: bool) void {
+    assert(piece != .none);
+    self.map[piece.toU4()].setValue(square, value);
+}
+
+/// Unsets an individual `Square` for a given `Piece`
+pub fn unsetSquare(self: *BitPieceMap, piece: Piece, square: Square) void {
+    assert(piece != .none);
+    self.map[piece.toU4()].unset(square);
+}
+
 /// Number of set `Square`s for a given `Piece`
 pub fn count(self: *const BitPieceMap, piece: Piece) IndexInt {
     assert(piece != .none);

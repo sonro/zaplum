@@ -38,6 +38,27 @@ pub fn TestImpl(comptime Impl: type) type {
             try testing.expect(map.get(.black_king).isSet(.e4));
         }
 
+        test "set square value true" {
+            var map = Impl.empty;
+            try testing.expect(!map.get(.black_pawn).isSet(.e7));
+            map.setSquareValue(.black_pawn, .e7, true);
+            try testing.expect(map.get(.black_pawn).isSet(.e7));
+        }
+
+        test "set square value false" {
+            var map = Impl.starting;
+            try testing.expect(map.get(.black_pawn).isSet(.e7));
+            map.setSquareValue(.black_pawn, .e7, false);
+            try testing.expect(!map.get(.black_pawn).isSet(.e7));
+        }
+
+        test "unset square" {
+            var map = Impl.starting;
+            try testing.expect(map.get(.black_pawn).isSet(.b7));
+            map.unsetSquare(.black_pawn, .b7);
+            try testing.expect(!map.get(.black_pawn).isSet(.b7));
+        }
+
         test "get does not mutate" {
             var map = Impl.empty;
             var board = map.get(.black_king);

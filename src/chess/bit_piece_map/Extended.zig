@@ -60,6 +60,23 @@ pub fn setSquare(self: *Extended, piece: Piece, square: Square) void {
     self.updateExtra(piece);
 }
 
+/// Sets an individual `Square` for a given `Piece` to `value`
+/// Does not remove any existing `Square`
+/// Updates the `Extra` data
+pub fn setSquareValue(self: *Extended, piece: Piece, square: Square, value: bool) void {
+    assert(piece != .none);
+    self.map.setSquareValue(piece, square, value);
+    self.updateExtra(piece);
+}
+
+/// Unsets an individual `Square` for a given `Piece`
+/// Updates the `Extra` data
+pub fn unsetSquare(self: *Extended, piece: Piece, square: Square) void {
+    assert(piece != .none);
+    self.map.unsetSquare(piece, square);
+    self.updateExtra(piece);
+}
+
 /// Number of set `Square`s for a given `Piece`
 pub fn count(self: *const Extended, piece: Piece) IndexInt {
     assert(piece != .none);
