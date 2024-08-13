@@ -124,7 +124,7 @@ pub const RankFile = struct {
     }
 
     pub fn format(self: RankFile, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
-        try writer.print("{s}{s}", .{ self.file, self.rank });
+        try writer.print("{c}{c}", .{ self.file.char(), self.rank.char() });
     }
 };
 
