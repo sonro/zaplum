@@ -120,6 +120,11 @@ pub fn updateExtra(self: *Extended, piece: Piece) void {
     self.extra.update(&self.map, piece);
 }
 
+/// Return a `BitPieceMap` without the `Extra` union data
+pub fn unextend(self: Extended) BitPieceMap {
+    return self.map;
+}
+
 comptime {
     const tests = @import("tests.zig");
     _ = tests.TestImpl(Extended);
