@@ -12,6 +12,7 @@ pub const Piece = @import("chess/piece.zig").Piece;
 pub const PieceList = @import("chess/PieceList.zig");
 pub const PieceMap = @import("chess/PieceMap.zig");
 pub const Placement = @import("chess/Placement.zig");
+pub const PosHash = @import("chess/PosHash.zig");
 pub const Rank = square.Rank;
 pub const RankFile = square.RankFile;
 pub const Side = color.Side;
