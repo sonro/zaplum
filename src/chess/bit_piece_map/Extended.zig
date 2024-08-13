@@ -7,6 +7,7 @@
 const Extended = @This();
 
 const std = @import("std");
+const builtin = @import("builtin");
 const testing = std.testing;
 const assert = std.debug.assert;
 
@@ -41,6 +42,11 @@ pub fn init(map: BitPieceMap) Extended {
         .map = map,
         .extra = Extra.init(&map),
     };
+}
+
+/// In debug mode, assert no two pieces occupy the same square
+pub fn assertValid(self: *const Extended) void {
+    if (builtin.mode == .Debug) self.map.assertValid();
 }
 
 /// Sets the `BitBoard` for a given `Piece`

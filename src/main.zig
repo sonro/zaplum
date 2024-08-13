@@ -39,4 +39,5 @@ pub fn main() !void {
     // print bit piece map and extra
     const bpm = zaplum.chess.BitPieceMap.starting.extend();
     std.debug.print("{s}", .{bpm});
+    bpm.assertValid();
 }

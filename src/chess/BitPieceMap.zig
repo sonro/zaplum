@@ -2,6 +2,7 @@
 const BitPieceMap = @This();
 
 const std = @import("std");
+const builtin = @import("builtin");
 const testing = std.testing;
 const assert = std.debug.assert;
 
@@ -31,6 +32,21 @@ const starting_bit_masks: MaskIntMap = initStartingBitMasks();
 
 /// `MaskInt` per `Piece`
 const MaskIntMap = [capacity]MaskInt;
+
+/// In debug mode, assert no two pieces occupy the same square
+pub fn assertValid(self: *const BitPieceMap) void {
+    if (builtin.mode != .Debug) return;
+    var seen: [chess.board_size]bool = .{false} ** chess.board_size;
+    for (Piece.hard_values) |piece| {
+        var iter = self.get(piece).iterator(.{});
+        while (iter.next()) |sq| {
+            if (seen[sq]) {
+                std.debug.panic("More than one piece on square {}", .{Square.fromIndex(sq)});
+            }
+            seen[sq] = true;
+        }
+    }
+}
 
 /// Sets the `BitBoard` for a given `Piece`
 pub fn setBoard(self: *BitPieceMap, piece: Piece, board: BitBoard) void {
