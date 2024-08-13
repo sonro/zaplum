@@ -35,28 +35,28 @@ pub fn TestImpl(comptime Impl: type) type {
             var map = Impl.empty;
             try testing.expect(!map.get(.black_king).isSet(.e4));
             map.setSquare(.black_king, .e4);
-            try testing.expect(map.get(.black_king).isSet(.e4));
+            try testSetUnions(map, .black_king, .e4);
         }
 
         test "set square value true" {
             var map = Impl.empty;
             try testing.expect(!map.get(.black_pawn).isSet(.e7));
             map.setSquareValue(.black_pawn, .e7, true);
-            try testing.expect(map.get(.black_pawn).isSet(.e7));
+            try testSetUnions(map, .black_pawn, .e7);
         }
 
         test "set square value false" {
             var map = Impl.starting;
             try testing.expect(map.get(.black_pawn).isSet(.e7));
             map.setSquareValue(.black_pawn, .e7, false);
-            try testing.expect(!map.get(.black_pawn).isSet(.e7));
+            try testUnsetUnions(map, .black_pawn, .e7);
         }
 
         test "unset square" {
             var map = Impl.starting;
             try testing.expect(map.get(.black_pawn).isSet(.b7));
             map.unsetSquare(.black_pawn, .b7);
-            try testing.expect(!map.get(.black_pawn).isSet(.b7));
+            try testUnsetUnions(map, .black_pawn, .b7);
         }
 
         test "get does not mutate" {
@@ -172,6 +172,26 @@ pub fn TestImpl(comptime Impl: type) type {
                 std.debug.print("Piece: {s}\n", .{@tagName(piece)});
                 return err;
             };
+        }
+
+        fn testSetUnions(map: Impl, piece: Piece, square: Square) !void {
+            const board = map.get(piece);
+            try testing.expect(board.isSet(square));
+            try testing.expect(map.getAll().isSet(square));
+            try testing.expect(map.getKind(piece.kind()).isSet(square));
+            const color = try Color.fromSide(piece.side());
+            try testing.expect(map.getColor(color).isSet(square));
+            try testing.expect(map.getSide(piece.side()).isSet(square));
+        }
+
+        fn testUnsetUnions(map: Impl, piece: Piece, square: Square) !void {
+            const board = map.get(piece);
+            try testing.expect(!board.isSet(square));
+            try testing.expect(!map.getAll().isSet(square));
+            try testing.expect(!map.getKind(piece.kind()).isSet(square));
+            const color = try Color.fromSide(piece.side());
+            try testing.expect(!map.getColor(color).isSet(square));
+            try testing.expect(!map.getSide(piece.side()).isSet(square));
         }
     };
 }

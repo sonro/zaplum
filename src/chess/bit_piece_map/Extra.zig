@@ -19,28 +19,30 @@ kind: [Piece.Kind.hard_count]BitBoard,
 all: BitBoard,
 
 /// `Extra` from a `BitPieceMap`
-pub fn init(self: *const BitPieceMap) Extra {
-    var ex: Extra = undefined;
-    ex.color[Color.white.toU1()] = self.getColor(.white);
-    ex.color[Color.black.toU1()] = self.getColor(.black);
-    ex.kind[Piece.Kind.pawn.toU3()] = self.getKind(Piece.Kind.pawn);
-    ex.kind[Piece.Kind.knight.toU3()] = self.getKind(Piece.Kind.knight);
-    ex.kind[Piece.Kind.bishop.toU3()] = self.getKind(Piece.Kind.bishop);
-    ex.kind[Piece.Kind.rook.toU3()] = self.getKind(Piece.Kind.rook);
-    ex.kind[Piece.Kind.queen.toU3()] = self.getKind(Piece.Kind.queen);
-    ex.kind[Piece.Kind.king.toU3()] = self.getKind(Piece.Kind.king);
-    ex.all = ex.color[0].unionWith(ex.color[1]);
-    return ex;
+pub fn init(map: *const BitPieceMap) Extra {
+    var self: Extra = undefined;
+    self.color[Color.white.toU1()] = map.getColor(.white);
+    self.color[Color.black.toU1()] = map.getColor(.black);
+    self.kind[Piece.Kind.pawn.toU3()] = map.getKind(Piece.Kind.pawn);
+    self.kind[Piece.Kind.knight.toU3()] = map.getKind(Piece.Kind.knight);
+    self.kind[Piece.Kind.bishop.toU3()] = map.getKind(Piece.Kind.bishop);
+    self.kind[Piece.Kind.rook.toU3()] = map.getKind(Piece.Kind.rook);
+    self.kind[Piece.Kind.queen.toU3()] = map.getKind(Piece.Kind.queen);
+    self.kind[Piece.Kind.king.toU3()] = map.getKind(Piece.Kind.king);
+    self.all = self.color[0].unionWith(self.color[1]);
+    return self;
 }
 
 /// Update this `Extra` from a `BitPieceMap`
 ///
 /// Call this to keep `Extra` in sync with `BitPieceMap` changes
 pub fn update(self: *Extra, map: *const BitPieceMap, piece: Piece) void {
-    const board = map.get(piece);
-    self.all.setUnion(board);
-    self.color[piece.side().toU2()].setUnion(board);
-    self.kind[piece.kind().toU3()].setUnion(board);
+    assert(piece != .none);
+    const side = piece.side();
+    const kind = piece.kind();
+    self.color[side.toU2()] = map.getSide(side);
+    self.kind[kind.toU3()] = map.getKind(kind);
+    self.all = self.color[0].unionWith(self.color[1]);
 }
 
 test "init" {
