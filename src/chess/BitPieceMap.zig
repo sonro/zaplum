@@ -1,3 +1,4 @@
+//! Board representation using a `BitBoard` per `Piece`
 const BitPieceMap = @This();
 
 const std = @import("std");
@@ -16,43 +17,53 @@ const Square = chess.Square;
 pub const Extended = @import("bit_piece_map/Extended.zig");
 pub const Extra = @import("bit_piece_map/Extra.zig");
 
+/// Underlying array, prefer using the `set` and `get` methods
 map: BitMap,
 
 pub const empty: BitPieceMap = initEmpty();
 pub const starting: BitPieceMap = initStarting();
 
+/// `Bitboard` per `Piece`
 pub const BitMap = [capacity]BitBoard;
 
 pub const capacity = Piece.hard_count;
 const starting_bit_masks: MaskIntMap = initStartingBitMasks();
 
+/// `MaskInt` per `Piece`
 const MaskIntMap = [capacity]MaskInt;
 
+/// Sets the `BitBoard` for a given `Piece`
 pub fn setBoard(self: *BitPieceMap, piece: Piece, board: BitBoard) void {
     assert(piece != .none);
     self.map[piece.toU4()] = board;
 }
 
+/// Sets an individual `Square` for a given `Piece`
+/// Does not remove any existing `Square`
 pub fn setSquare(self: *BitPieceMap, piece: Piece, square: Square) void {
     assert(piece != .none);
     self.map[piece.toU4()].set(square);
 }
 
+/// Number of set `Square`s for a given `Piece`
 pub fn count(self: *const BitPieceMap, piece: Piece) IndexInt {
     assert(piece != .none);
     return self.map[piece.toU4()].count();
 }
 
+/// `BitBoard` for a `Piece`
 pub fn get(self: *const BitPieceMap, piece: Piece) BitBoard {
     assert(piece != .none);
     return self.map[piece.toU4()];
 }
 
+/// Mutable reference to the `BitBoard` for a `Piece`
 pub fn getMut(self: *BitPieceMap, piece: Piece) *BitBoard {
     assert(piece != .none);
     return &self.map[piece.toU4()];
 }
 
+/// `BitBoard` union of all `Piece.Kind` on the board
 pub fn getKind(self: *const BitPieceMap, piece_kind: Piece.Kind) BitBoard {
     assert(piece_kind != .none);
     const white_piece = Piece.color_values[0][piece_kind.toU3()];
@@ -62,6 +73,7 @@ pub fn getKind(self: *const BitPieceMap, piece_kind: Piece.Kind) BitBoard {
     return white_board.unionWith(black_board);
 }
 
+/// `BitBoard` union of all `Color` on the board
 pub fn getColor(self: *const BitPieceMap, color: Color) BitBoard {
     var bb = BitBoard.empty;
     for (Piece.color_values[color.toU1()]) |piece| {
@@ -70,6 +82,10 @@ pub fn getColor(self: *const BitPieceMap, color: Color) BitBoard {
     return bb;
 }
 
+/// `BitBoard` union of all `Side` on the board
+///
+/// `Side.none` returns an empty board
+/// `Side.both` same as `getAll`
 pub fn getSide(self: *const BitPieceMap, side: Side) BitBoard {
     var bb = BitBoard.empty;
     for (Piece.side_values[side.toU2()]) |piece| {
@@ -78,6 +94,7 @@ pub fn getSide(self: *const BitPieceMap, side: Side) BitBoard {
     return bb;
 }
 
+/// `BitBoard` union of all `Piece`s on the board
 pub fn getAll(self: *const BitPieceMap) BitBoard {
     var bb = BitBoard.empty;
     for (self.map) |board| {
@@ -86,10 +103,12 @@ pub fn getAll(self: *const BitPieceMap) BitBoard {
     return bb;
 }
 
+/// Union data for this `BitPieceMap`
 pub fn extra(self: *const BitPieceMap) Extra {
     return Extra.init(self);
 }
 
+///  Add `Extra` union data to this `BitPieceMap`
 pub fn extend(self: *BitPieceMap) Extended {
     return Extended.init(self);
 }

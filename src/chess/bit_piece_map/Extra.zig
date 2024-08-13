@@ -1,3 +1,4 @@
+//! Union data for `BitPieceMap`
 const Extra = @This();
 
 const std = @import("std");
@@ -8,16 +9,16 @@ const chess = @import("../../chess.zig");
 const BitPieceMap = chess.BitPieceMap;
 const BitBoard = chess.BitBoard;
 const Color = chess.Color;
-const IndexInt = chess.IndexInt;
-const MaskInt = BitBoard.MaskInt;
 const Piece = chess.Piece;
-const Side = chess.Side;
-const Square = chess.Square;
 
+/// `BitBoard` union per `Color`
 color: [2]BitBoard,
+/// `BitBoard` union per `Piece.Kind`
 kind: [Piece.Kind.hard_count]BitBoard,
+/// `BitBoard` union of all `Piece`s
 all: BitBoard,
 
+/// `Extra` from a `BitPieceMap`
 pub fn init(self: *const BitPieceMap) Extra {
     var ex: Extra = undefined;
     ex.color[Color.white.toU1()] = self.getColor(.white);
@@ -32,6 +33,9 @@ pub fn init(self: *const BitPieceMap) Extra {
     return ex;
 }
 
+/// Update this `Extra` from a `BitPieceMap`
+///
+/// Call this to keep `Extra` in sync with `BitPieceMap` changes
 pub fn update(self: *Extra, map: *const BitPieceMap, piece: Piece) void {
     const board = map.get(piece);
     self.all.setUnion(board);
