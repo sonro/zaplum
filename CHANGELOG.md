@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2024-08-13
+
 ### Chess module
 
 #### Added
@@ -74,7 +76,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `chess` module featuring a `BitBoard` representation.
 
-[Unreleased]: https://github.com/sonro/zaplum/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/sonro/zaplum/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/sonro/zaplum/releases/tag/v0.3.0
 [0.2.1]: https://github.com/sonro/zaplum/releases/tag/v0.2.1
 [0.2.0]: https://github.com/sonro/zaplum/releases/tag/v0.2.0
 [0.1.2]: https://github.com/sonro/zaplum/releases/tag/v0.1.2
