@@ -49,8 +49,18 @@ const impl = switch (zaplum.options.bit_board_impl) {
     .lookup => LookupImpl,
 };
 
+/// Construct a board from a bit mask
 pub fn from(mask: MaskInt) BitBoard {
     return .{ .mask = mask };
+}
+
+/// Construct a board from a list of squares
+pub fn fromSquares(squares: []const Square) BitBoard {
+    var self = empty;
+    for (squares) |square| {
+        self.set(square);
+    }
+    return self;
 }
 
 /// Returns true if this square is set
@@ -317,6 +327,11 @@ test "single val is not empty" {
 test "from" {
     const expected = BitBoard{ .mask = 0x0f0f };
     try testing.expectEqual(expected, from(0x0f0f));
+}
+
+test "from squares" {
+    const expected = BitBoard{ .mask = 0b0101 };
+    try testing.expectEqual(expected, fromSquares(&.{ .a1, .c1 }));
 }
 
 test "is set" {
