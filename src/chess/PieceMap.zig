@@ -51,7 +51,9 @@ pub fn assertValid(self: *const PieceMap) void {
         const sli = self.slice(piece);
         for (sli) |square| {
             if (square == .none) continue;
-            assert(!seen[@intFromEnum(square)]); // more than one piece on square
+            if (seen[@intFromEnum(square)]) {
+                std.debug.panic("More than one piece on square {}", .{square});
+            }
             seen[@intFromEnum(square)] = true;
         }
     }
