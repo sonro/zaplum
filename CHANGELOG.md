@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `CastleState` and `CastleStatePacked` `none` and `all` constants.
 - `PosHash` position hashing.
+- Single char `Color` representation.
+- `Position` and `PositionPacked`.
 
 ## [0.3.1] - 2024-08-13
 
