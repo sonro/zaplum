@@ -1,6 +1,7 @@
 const castling = @import("chess/castling.zig");
 const color = @import("chess/color.zig");
 const square = @import("chess/square.zig");
+const position = @import("chess/position.zig");
 
 pub const BitBoard = @import("chess/BitBoard.zig");
 pub const BitPieceMap = @import("chess/BitPieceMap.zig");
@@ -13,6 +14,8 @@ pub const PieceList = @import("chess/PieceList.zig");
 pub const PieceMap = @import("chess/PieceMap.zig");
 pub const Placement = @import("chess/Placement.zig");
 pub const PosHash = @import("chess/PosHash.zig");
+pub const Position = position.Position;
+pub const PositionPacked = position.PositionPacked;
 pub const Rank = square.Rank;
 pub const RankFile = square.RankFile;
 pub const Side = color.Side;
