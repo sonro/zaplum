@@ -87,7 +87,7 @@ pub fn extra(self: *const Extended) Extra {
     return self.extra;
 }
 
-fn updateExtra(self: *Extended, piece: Piece) void {
+pub fn updateExtra(self: *Extended, piece: Piece) void {
     self.extra.update(&self.map, piece);
 }
 
