@@ -5,6 +5,9 @@ comptime {
     _ = @import("chess/BitBoard.zig");
     _ = @import("chess/bit_board/LookupImpl.zig");
     _ = @import("chess/bit_board/MathImpl.zig");
+    _ = @import("chess/BitPieceMap.zig");
+    _ = @import("chess/bit_piece_map/Extended.zig");
+    _ = @import("chess/bit_piece_map/Extra.zig");
     _ = @import("chess/color.zig");
     _ = @import("chess/piece.zig");
     _ = @import("chess/piece/ConditionImpl.zig");
