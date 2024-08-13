@@ -122,8 +122,28 @@ pub fn extra(self: *const BitPieceMap) Extra {
 }
 
 ///  Add `Extra` union data to this `BitPieceMap`
-pub fn extend(self: *BitPieceMap) Extended {
+pub fn extend(self: BitPieceMap) Extended {
     return Extended.init(self);
+}
+
+pub fn format(self: *const BitPieceMap, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+    // print as a single board representation
+    var rank: usize = 8;
+    while (rank > 0) {
+        rank -= 1;
+        for (0..8) |file| {
+            const square: Square = @enumFromInt(rank * 8 + file);
+            var piece: Piece = .none;
+            piece: for (Piece.hard_values) |p| {
+                if (self.get(p).isSet(square)) {
+                    piece = p;
+                    break :piece;
+                }
+            }
+            try writer.print(" {s}", .{piece});
+        }
+        try writer.writeByte('\n');
+    }
 }
 
 fn initEmpty() BitPieceMap {
@@ -164,4 +184,19 @@ fn initStartingBitMasks() MaskIntMap {
 comptime {
     const tests = @import("bit_piece_map/tests.zig");
     _ = tests.TestImpl(BitPieceMap);
+}
+
+test "format" {
+    const bm = BitPieceMap.initStarting();
+    try testing.expectFmt(
+        \\ r n b q k b n r
+        \\ p p p p p p p p
+        \\ - - - - - - - -
+        \\ - - - - - - - -
+        \\ - - - - - - - -
+        \\ - - - - - - - -
+        \\ P P P P P P P P
+        \\ R N B Q K B N R
+        \\
+    , "{s}", .{bm});
 }

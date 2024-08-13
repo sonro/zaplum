@@ -35,4 +35,8 @@ pub fn main() !void {
     std.debug.print("{s}\n", .{piece_map});
     std.debug.print("piece map size: {}\n", .{@sizeOf(zaplum.chess.PieceMap)});
     piece_map.assertValid();
+
+    // print bit piece map and extra
+    const bpm = zaplum.chess.BitPieceMap.starting.extend();
+    std.debug.print("{s}", .{bpm});
 }

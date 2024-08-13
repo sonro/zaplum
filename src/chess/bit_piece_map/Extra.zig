@@ -10,6 +10,7 @@ const BitPieceMap = chess.BitPieceMap;
 const BitBoard = chess.BitBoard;
 const Color = chess.Color;
 const Piece = chess.Piece;
+const Square = chess.Square;
 
 /// `BitBoard` union per `Color`
 color: [2]BitBoard,
@@ -45,6 +46,61 @@ pub fn update(self: *Extra, map: *const BitPieceMap, piece: Piece) void {
     self.all = self.color[0].unionWith(self.color[1]);
 }
 
+pub fn format(self: *const Extra, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+    const colors: []const BitBoardInfo = &.{
+        .{ .bb = self.color[Color.white.toU1()], .name = "WHITE" },
+        .{ .bb = self.color[Color.black.toU1()], .name = "BLACK" },
+        .{ .bb = self.all, .name = "BOTH" },
+    };
+    try printBitBoardCollection(colors, writer);
+
+    var kinds: []const BitBoardInfo = &.{
+        .{ .bb = self.kind[Piece.Kind.pawn.toU3()], .name = "PAWNS" },
+        .{ .bb = self.kind[Piece.Kind.knight.toU3()], .name = "KNIGHTS" },
+        .{ .bb = self.kind[Piece.Kind.bishop.toU3()], .name = "BISHOPS" },
+    };
+    try printBitBoardCollection(kinds, writer);
+    kinds = &.{
+        .{ .bb = self.kind[Piece.Kind.rook.toU3()], .name = "ROOKS" },
+        .{ .bb = self.kind[Piece.Kind.queen.toU3()], .name = "QUEENS" },
+        .{ .bb = self.kind[Piece.Kind.king.toU3()], .name = "KINGS" },
+    };
+    try printBitBoardCollection(kinds, writer);
+}
+
+const BitBoardInfo = struct {
+    bb: BitBoard,
+    name: []const u8,
+};
+
+fn printBitBoardCollection(boards: []const BitBoardInfo, writer: anytype) !void {
+    // titles
+    try writer.writeByte('\n');
+    for (boards) |info| try writer.print(" {s: ^16}", .{info.name});
+    try writer.writeByte('\n');
+
+    // boards
+    var rank: usize = 8;
+    while (rank > 0) {
+        rank -= 1;
+        for (boards) |info| try printBitBoardRank(info.bb, rank, writer);
+        try writer.writeByte('\n');
+    }
+}
+
+fn printBitBoardRank(bb: BitBoard, rank: usize, writer: anytype) !void {
+    const imod = rank * 8;
+    for (0..8) |file| {
+        const square: Square = @enumFromInt(imod + file);
+        if (bb.isSet(square)) {
+            try writer.writeAll(" X");
+        } else {
+            try writer.writeAll(" -");
+        }
+    }
+    try writer.writeByte(' ');
+}
+
 test "init" {
     var map = BitPieceMap.empty;
     map.setSquare(.white_pawn, .a2);
@@ -70,4 +126,42 @@ test "update" {
     try testing.expectEqual(extra.all, map.getAll());
     try testing.expectEqual(extra.color[Color.white.toU1()], map.getColor(.white));
     try testing.expectEqual(extra.kind[Piece.Kind.pawn.toU3()], map.getKind(.pawn));
+}
+
+test "format" {
+    // extra space after line
+    const expected =
+        \\
+        \\      WHITE            BLACK             BOTH      
+        \\ - - - - - - - -  X X X X X X X X  X X X X X X X X 
+        \\ - - - - - - - -  X X X X X X X X  X X X X X X X X 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ X X X X X X X X  - - - - - - - -  X X X X X X X X 
+        \\ X X X X X X X X  - - - - - - - -  X X X X X X X X 
+        \\
+        \\      PAWNS           KNIGHTS          BISHOPS     
+        \\ - - - - - - - -  - X - - - - X -  - - X - - X - - 
+        \\ X X X X X X X X  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ X X X X X X X X  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - X - - - - X -  - - X - - X - - 
+        \\
+        \\      ROOKS            QUEENS           KINGS      
+        \\ X - - - - - - X  - - - X - - - -  - - - - X - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ - - - - - - - -  - - - - - - - -  - - - - - - - - 
+        \\ X - - - - - - X  - - - X - - - -  - - - - X - - - 
+        \\
+    ;
+    try testing.expectFmt(expected, "{s}", .{Extra.init(&BitPieceMap.starting)});
 }

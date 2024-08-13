@@ -142,6 +142,10 @@ pub fn unextend(self: Extended) BitPieceMap {
     return self.map;
 }
 
+pub fn format(self: *const Extended, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+    try writer.print("{s}{s}", .{ self.map, self.extra });
+}
+
 comptime {
     const tests = @import("tests.zig");
     _ = tests.TestImpl(Extended);
