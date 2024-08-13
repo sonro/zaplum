@@ -1,8 +1,11 @@
+const castling = @import("chess/castling.zig");
 const color = @import("chess/color.zig");
 const square = @import("chess/square.zig");
 
 pub const BitBoard = @import("chess/BitBoard.zig");
 pub const BitPieceMap = @import("chess/BitPieceMap.zig");
+pub const CastleState = castling.State;
+pub const CastleStatePacked = castling.StatePacked;
 pub const Color = color.Color;
 pub const File = square.File;
 pub const Piece = @import("chess/piece.zig").Piece;

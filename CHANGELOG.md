@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `BitPieceMap` board representation.
   - `Extended` version for more info.
 - `BitBoard` from `Square` slice.
+- `CastleState` and `CastleStatePacked`.
 
 ## [0.3.0] - 2024-08-13
 

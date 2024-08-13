@@ -8,6 +8,7 @@ comptime {
     _ = @import("chess/BitPieceMap.zig");
     _ = @import("chess/bit_piece_map/Extended.zig");
     _ = @import("chess/bit_piece_map/Extra.zig");
+    _ = @import("chess/castling.zig");
     _ = @import("chess/color.zig");
     _ = @import("chess/piece.zig");
     _ = @import("chess/piece/ConditionImpl.zig");
