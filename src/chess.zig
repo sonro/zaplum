@@ -9,6 +9,7 @@ pub const CastleState = castling.State;
 pub const CastleStatePacked = castling.StatePacked;
 pub const Color = color.Color;
 pub const File = square.File;
+pub const Move = @import("chess/Move.zig");
 pub const Piece = @import("chess/piece.zig").Piece;
 pub const PieceList = @import("chess/PieceList.zig");
 pub const PieceMap = @import("chess/PieceMap.zig");

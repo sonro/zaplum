@@ -11,6 +11,7 @@ comptime {
     _ = @import("chess/board.zig");
     _ = @import("chess/castling.zig");
     _ = @import("chess/color.zig");
+    _ = @import("chess/Move.zig");
     _ = @import("chess/piece.zig");
     _ = @import("chess/piece/ConditionImpl.zig");
     _ = @import("chess/piece/LookupImpl.zig");
