@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### Chess module
+
+- `board` sub module to convert between board representations.
+
 ## [0.3.2] - 2024-08-13
 
 ### Added

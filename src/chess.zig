@@ -20,6 +20,8 @@ pub const Rank = square.Rank;
 pub const RankFile = square.RankFile;
 pub const Side = color.Side;
 pub const Square = square.Square;
+
+pub const board = @import("chess/board.zig");
 pub const starting = @import("chess/starting.zig");
 
 /// The integer type used to index a board
