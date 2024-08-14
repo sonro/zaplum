@@ -8,15 +8,16 @@ const testing = std.testing;
 const assert = std.debug.assert;
 
 const chess = @import("../chess.zig");
-const board_size = chess.board_size;
 const Piece = chess.Piece;
 const Square = chess.Square;
 
-squares: [board_size]Piece,
+squares: [capacity]Piece,
 
-pub const empty = Placement{ .squares = [_]Piece{.none} ** board_size };
+pub const capacity = chess.board_size;
 
-pub const starting = Placement{ .squares = [board_size]Piece{
+pub const empty = Placement{ .squares = [_]Piece{.none} ** capacity };
+
+pub const starting = Placement{ .squares = [capacity]Piece{
     .white_rook, .white_knight, .white_bishop, .white_queen, .white_king, .white_bishop, .white_knight, .white_rook,
     .white_pawn, .white_pawn,   .white_pawn,   .white_pawn,  .white_pawn, .white_pawn,   .white_pawn,   .white_pawn,
     .none,       .none,         .none,         .none,        .none,       .none,         .none,         .none,
@@ -48,7 +49,7 @@ pub const Packed = struct {
     pub const empty = Packed{ .squares = Array.initAllTo(Piece.none.toU4()) };
     pub const starting = initStarting();
 
-    pub const Array = std.PackedIntArray(u4, board_size);
+    pub const Array = std.PackedIntArray(u4, capacity);
 
     pub fn get(self: *const Packed, square: Square) Piece {
         assert(square != .none);
@@ -95,7 +96,7 @@ comptime {
 fn TestImpl(comptime Impl: type) type {
     return struct {
         test "empty" {
-            try testPieces(&testSqPcRepeat(.a1, .h8, .none, board_size), Impl.empty);
+            try testPieces(&testSqPcRepeat(.a1, .h8, .none, capacity), Impl.empty);
         }
 
         test "starting white big pieces" {
